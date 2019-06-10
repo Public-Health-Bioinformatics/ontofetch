@@ -51,7 +51,6 @@ The following table details prototype vocabulary lookup table fields and functio
 | ontology | string | Ontology source | Prefix of ontology term came from. Some ontologies like GENEPIO have collections of terms from other ontologies. It helps to source a term from one and only one ontology, thus avoiding duplicates and the potential for variance that arises from that. However, duplicates are probably unavoidable, so determining which ontology takes priority, or how to merge, is a question.
 | language | String (iso 2-letter country code) | Language | Language of text entries.  There will always be an english version. Text for other labels, definitions and synonyms can populate other records that have the same term id.
 | parent_id | onto_id | Parent ontology identifier | Id of parent term with respect to ontology.
-
 | other_parents | Comma-separated onto_id | Other parent ontology identifiers | A term can have more than one parent, which is provided as a list here. Above parent_id is the primary one for rendering display hierarchy if term returned in a search. How to choose primary parent?
 | label | string | Label | English term label from original ontology
 | definition | string | Definition | English definition as provided by original ontology
