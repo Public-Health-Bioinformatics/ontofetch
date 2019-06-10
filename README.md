@@ -45,8 +45,8 @@ To extend this system to be multilingual could involve a separate “multilingua
 
 The following table details prototype vocabulary lookup table fields and functionality.
 
-|---|---|---|---|
 | field | type | Field label | Description |
+| --- | --- | --- | --- |
 | id | onto_id | Ontology identifier | Formatted as [ontology prefix]:[numeric id or other format identifier] .  ADD .X for updates?
 | ontology | string | Ontology source | Prefix of ontology term came from. Some ontologies like GENEPIO have collections of terms from other ontologies. It helps to source a term from one and only one ontology, thus avoiding duplicates and the potential for variance that arises from that. However, duplicates are probably unavoidable, so determining which ontology takes priority, or how to merge, is a question.
 | language | String (iso 2-letter country code) | Language | Language of text entries.  There will always be an english version. Text for other labels, definitions and synonyms can populate other records that have the same term id.
