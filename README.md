@@ -57,7 +57,10 @@ The following table details prototype vocabulary lookup table fields and functio
 | ui_label | string | User interface label | English user interface label.  This is currently specific to the GenEpiO ontology which provides its own term overrides, to enable user friendly term labels to be superimposed on terms that are imported from 3rd party ontologies (and even for GenEpiO’s own terms).
 | ui_definition | string | User interface definition | English User interface definition if different from original ontology definition. This could also be manually forced in this table? As well this can be a short form of a term’s longer definition, e.g. just the first 2 sentences?
 | updated | datetime | Updated | Updated date
-| synonym | string | Synonym | A divider || separated list of synonyms gathered from source ontology.  Or we keep these in a separate lookup table. These will be important to search by when looking up a given term by “intellisense” typing.
+| synonym | string | Synonym | A divider-separated list of synonyms gathered from source ontology. These are important to search by when looking up a given term by “intellisense” typing.
+| broad_synonym | string | Broad Synonym | A broad synonym references terms other than given term; equivalent to SKOS broader concept
+| narrow_synonym | string | Narrow Synonym | A narrow synonym references terms that are more specific than given term. Equivalent to SKOS narrower concept.
+| exact_synonym | string | Exact Synonym | An exact synonym for given term.
 | ui_help | string | User interface help | User interface help info for this term?
 | preferred | boolean | Preferred version | Selected when an software install prefers to force a particular term to use a given term record because install agency prefers that record until new content can be reviewed, or for all-time. Preferred record overrides all others and cannot be overwritten in an import. It is possible ui label and definition could be set independently of source ontology in such cases.
 | deprecated | boolean | Deprecated | Flag (from owl:deprecated annotation) indicating whether term is no longer in use and should not be in user interfaces (from perspective of ontology curators).  Note, this only pertains to source ontology terms, not imports.
