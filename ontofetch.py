@@ -16,15 +16,20 @@
 	ISSUE: Doing a "BINDING (?x as ?y)" expression prevents ?x from 
 	being output in a SELECT. bug leads to no such field being output.
 
-	e.g. python ontofetch.py ../genepio/src/ontology/genepio-merged.owl
-	     writes files genepio-merged.json, genepio-merged.tsv into folder
-	     program was launched in.
+	EXAMPLES
+	Retrieve local file genepio-merged.owl and write files genepio-merged.json, genepio-merged.tsv into folder program was launched in.
 
-	e.g. python ontofetch.py https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl -o test/
-	     writes files test/obi.json and test/obi.tsv into test/ subfolder.
+		> python ontofetch.py ../genepio/src/ontology/genepio-merged.owl
+	     
+	Retrieve OBI and write files test/obi.json and test/obi.tsv into test/ subfolder.
 
+		> python ontofetch.py https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl -o test/
+	     
+	Retrieve OBI "data visualization" and IAO "documenting" branches
 
-	FUTURE: Get ontology version, and add to output core filename ???
+		> python ontofetch.py https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl -o test/ -r http://purl.obolibrary.org/obo/OBI_0200111,http://purl.obolibrary.org/obo/IAO_0000572
+
+	FUTURE: Get ontology version, and add to "version" field
 	
 	**************************************************************************
 """ 

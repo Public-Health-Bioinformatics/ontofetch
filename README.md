@@ -1,6 +1,6 @@
 # ontofetch.py Vocabulary Fetch
 
-A command line fetch script (in https://github.com/GenEpiO/geem in scripts/ontofetch.py) will fetch and prepare the necessary field data from a given ontology URL or file. This is output in tabular and JSON if desired. Currently every term under “entity:Thing” in an OWL 2.0 ontology is fetched. Usage:
+A command line fetch script (in https://github.com/GenEpiO/geem in scripts/ontofetch.py) will fetch and prepare the necessary field data from a given ontology URL or file. This is output in tabular and JSON if desired. Currently every term under “entity:Thing” in an OWL 2.0 ontology is fetched by default, but one can specify a comma-delimited list of URLs to fetch terms under via the -r or -root parameter. Usage:
 
 > ontofetch.py [file path or URL of ontology to fetch] -o [output file folder] -r [ontology root term URI]
 
@@ -28,7 +28,10 @@ Question: if it is desired that a software install preserve particular term labe
 
 - Provide a way of existing software installs to maintain display or output of term labels as desired by a given software installation.
 
-- Provide alternative label, definition and user interface help.
+- Provide alternative label, definition and user interface help. This is achieved by looking for 3 annotation tags: 
+  - GENEPIO:0000006 user interface label
+  - GENEPIO:0000162 user interface definition
+  - GENEPIO:0001763 user interface feature.  Help info is retrieved where value begins with "help:"
 
 - Lookup table does not provide further data specification details (such as required field); this is left for a separate specification component to define in the context of software template specifications.
 
