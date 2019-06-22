@@ -55,13 +55,13 @@ class MyParser(optparse.OptionParser):
 		return self.epilog
 
 
-class Ontology(object):
+class OntologyBuckets(object):
 	"""
 
 
 	"""
 
-	CODE_VERSION = '0.0.2'
+	CODE_VERSION = '0.0.3'
 
 	def __init__(self):
 
@@ -123,10 +123,12 @@ class Ontology(object):
 		}
 
 		"""
-		"predicate_set" dictionary is the set of predicates we can expect
-		in a bucket matching expression ('has member' axiom). The dictionary value 
-		contains data types that object should match to, and if so, a 
-		response specific to that triple.
+		The "PREDICATE_SET" dictionary has for its keys the set of predicates
+		we can expect in a bucket matching expression ('has member' axiom). 
+		The dictionary contains datatypes as keys that object's data type 
+		should match to, and for the match, a response specific to that 
+		datatype. Recursion is carried out where the object is a BNode that 
+		must be investigated further.
 
 		NOTE: If ontobucket.py prints out an error of form "unrecognized 
 		predicate [BIG LONG PREFIX]" and you need that predicate, then 
@@ -161,6 +163,15 @@ class Ontology(object):
 			},
 			'rdf:type': {str: self.render_blank} # Uninformative class
 		}
+
+
+	def log(self, *args):
+		"""
+			Show log messages and differential time between calls
+		"""
+		timestamp = datetime.datetime.now()
+		print("time delta: ", str(timestamp - self.timestamp), "\n", str(args))
+		self.timestamp = timestamp
 
 
 	def __main__(self):
@@ -203,14 +214,60 @@ class Ontology(object):
 			self.log('report_mapping')
 			self.do_membership_rules(term_id)
 
+		# FUTURE: WRITE OUT FILE HERE.
 
-	def log(self, *args):
+
+	def do_membership_rules(self, term_id):
+		""" ####################################################################
+			Membership Rules are boolean expressions or single entities linked
+			via 'has member' relation between a parent_id entity and children.
+
+			This script reports rule label and id (parent_id) and then sends
+			triple containing "[member of] [cardinality]
+
+			memberships_by_cardinality query returns just the cardinality part.
+			From there we explore the rest of the guts.
+
+			INPUTS
+				?parent_id ?label ?subject ?predicate ?object
+
 		"""
-			Show log messages and differential time between calls
+
+		specBinding = {'root': rdflib.URIRef(term_id)} 
+		table = self.onto_helper.do_query_table(self.queries['report_mapping'], specBinding )
+
+		print ("Buckets:", len(table))
+
+		for triple in table:
+			# TEST EXAMPLES
+			#if not triple['parent_id'] in (['AGENCY:0000002', 'AGENCY:0000007', 'AGENCY:0000041']):
+			#	continue
+
+			print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
+
+		return
+
+
+	def do_triple(self, triple):
 		"""
-		timestamp = datetime.datetime.now()
-		print("time delta: ", str(timestamp - self.timestamp), "\n", str(args))
-		self.timestamp = timestamp
+		Recursive processing of triples according to PREDICATE_SET rules.
+		"""
+		t_predicate = triple['predicate']
+
+		if not t_predicate in self.PREDICATE_SET:
+			print ("Unrecognized predicate", t_predicate, " in:", json.dumps(triple, sort_keys=False, indent=4, separators=(',', ': ')))
+			return
+
+		t_object = triple['object']
+		t_object_type = type(t_object)
+		object_type_set = self.PREDICATE_SET[t_predicate]
+
+		if not t_object_type in object_type_set:
+			print ("Unrecognized object for ", t_predicate,":",t_object_type, json.dumps(t_object, sort_keys=False, indent=4, separators=(',', ': ')))
+			return
+
+		t_triple_fn = object_type_set[t_object_type]
+		return t_triple_fn(triple)
 
 
 	def render_object_text(self, triple): 
@@ -225,8 +282,8 @@ class Ontology(object):
 		"""
 		For the QualifiedCardinality nodes, rdflib adds a shortcut "expression"
 		key-value dictionary which contains "datatype" [disjunction|conjunction]
-		and a "data" key that is a list of ontology entity ids. I think this is
-		triggered by a rdf:parseType="Collection" attribute.
+		and a "data" key that is a list of ontology entity ids. This appears to
+		be triggered by a rdf:parseType="Collection" attribute.
 		"""
 		datatype = 'owl:unionOf' if triple['expression']['datatype'] else 'owl:intersectionOf'
 
@@ -278,59 +335,9 @@ class Ontology(object):
 	def render_dump(self, triple):
 		return ("DEBUG:", json.dumps(triple, sort_keys=False, indent=4, separators=(',', ': ')))
 
+
 	def render_blank(self, triple):
 		return None
-
-	def do_membership_rules(self, term_id):
-		""" ####################################################################
-			Membership Rules are boolean expressions or single entities linked
-			via 'has member' relation between a parent_id entity and children.
-
-			This script reports rule label and id (parent_id) and then sends
-			triple containing "[member of] [cardinality]
-
-			memberships_by_cardinality query returns just the cardinality part.
-			From there we explore the rest of the guts.
-
-			INPUTS
-				?parent_id ?label ?subject ?predicate ?object
-
-		"""
-
-		specBinding = {'root': rdflib.URIRef(term_id)} 
-		table = self.onto_helper.do_query_table(self.queries['report_mapping'], specBinding )
-
-		print ("Buckets:", len(table))
-
-		for triple in table:
-			# TEST EXAMPLES
-			#if not triple['parent_id'] in (['AGENCY:0000002', 'AGENCY:0000007', 'AGENCY:0000041']):
-			#	continue
-
-			print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
-
-		return
-
-
-	def do_triple(self, triple):
-		"""
-		Recursiver processing of triples according to PREDICATE_SET rules.
-		"""
-		t_predicate = triple['predicate']
-
-		if not t_predicate in self.PREDICATE_SET:
-			print ("unrecognized predicate", t_predicate, " in:", json.dumps(triple, sort_keys=False, indent=4, separators=(',', ': ')))
-			return
-
-		t_object = triple['object']
-		t_object_type = type(t_object)
-		object_type_set = self.PREDICATE_SET[t_predicate]
-		if not t_object_type in object_type_set:
-			print ("unrecognized object for ", t_predicate,":",t_object_type, json.dumps(t_object, sort_keys=False, indent=4, separators=(',', ': ')))
-			return
-
-		t_triple_fn = object_type_set[t_object_type]
-		return t_triple_fn(triple)
 
 
 	def get_command_line(self):
@@ -357,6 +364,6 @@ class Ontology(object):
 
 if __name__ == '__main__':
 
-	genepio = Ontology()
-	genepio.__main__()  
+	buckets = OntologyBuckets()
+	buckets.__main__()  
 
