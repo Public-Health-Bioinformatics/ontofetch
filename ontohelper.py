@@ -67,6 +67,7 @@ class OntoHelper(object):
 		self.struct['@context'] = OrderedDict({
 			'owl': 'http://www.w3.org/2002/07/owl#',
 			'rdfs': 'http://www.w3.org/2000/01/rdf-schema#', 
+			'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 			'oboInOwl': 'http://www.geneontology.org/formats/oboInOwl#',
 			'xmls': 'http://www.w3.org/2001/XMLSchema#',
 			'vcard': 'http://www.w3.org/2006/vcard/ns#',
@@ -96,7 +97,8 @@ class OntoHelper(object):
 			'IAO':	rdflib.URIRef('http://purl.obolibrary.org/obo/IAO_'),
 			'GENEPIO':rdflib.URIRef('http://purl.obolibrary.org/obo/GENEPIO_'), # Still needed for a few GEEM relations
 			'RO':	rdflib.URIRef('http://purl.obolibrary.org/obo/RO_'),
-			'OBI':	rdflib.URIRef('http://purl.obolibrary.org/obo/OBI_')
+			'OBI':	rdflib.URIRef('http://purl.obolibrary.org/obo/OBI_'),
+			'AGENCY': rdflib.URIRef('http://genepio.org/ontology/lexmapr/')
 		}
 
 		self.queries = {

@@ -1,9 +1,0 @@
-id	parent_id	language	ontology	other_parents	label	definition	ul_label	ui_definition	ui_help	deprecated	replaced_by	synonym	broad_synonym	narrow_synonym	exact_synonym	alternative_term
-OBI:0200193	OBI:0200111				background corrected data visualization	A data visualization which has input of a background corrected data set and produces an output of a report graph which is capable of rendering data of this type.										
-OBI:0200192	OBI:0200111				classified data visualization	A data visualization which has input of a classified data set and produces an output of a report graph which is capable of rendering data of this type.										
-OBI:0200190	OBI:0200111				clustered data visualization	A data visualization which has input of a clustered data set and produces an output of a report graph which is capable of rendering data of this type.										
-OBI:0200191	OBI:0200111				gene list visualization	Adata visualization which has input of a gene list and produces an output of a report graph which is capable of rendering data of this type.										
-OBI:0200111																
-OBI:0000227	IAO:0000572				data encoding	a documenting process to encode an information entity into a digital document										
-OBI:0302914	IAO:0000572				digital curation	Digital curation is the process of establishing and developing long term repositories of digital assets for current and future reference by researchers, scientists, and historians, and scholars generally.										
-IAO:0000572																
