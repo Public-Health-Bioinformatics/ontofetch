@@ -966,11 +966,19 @@
 
     <owl:Class rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000041">
         <owl:equivalentClass>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000078"/>
-                <owl:someValuesFrom>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:complementOf>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000078"/>
+                                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/FOODON_03306867"/>
+                            </owl:Restriction>
+                        </owl:complementOf>
+                    </owl:Class>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000078"/>
+                        <owl:someValuesFrom>
                             <owl:Class>
                                 <owl:unionOf rdf:parseType="Collection">
                                     <rdf:Description rdf:about="http://purl.obolibrary.org/obo/FOODON_00001172"/>
@@ -979,13 +987,10 @@
                                     <rdf:Description rdf:about="http://purl.obolibrary.org/obo/FOODON_03411213"/>
                                 </owl:unionOf>
                             </owl:Class>
-                            <owl:Class>
-                                <owl:complementOf rdf:resource="http://purl.obolibrary.org/obo/FOODON_03306867"/>
-                            </owl:Class>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000001"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Damion</oboInOwl:created_by>
@@ -9290,6 +9295,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T04:04:39.520755Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;thin cut&apos;, &apos;thin sliced&apos;, &apos;thin crust&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">thin</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9301,6 +9307,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T04:04:39.521583Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:</rdfs:comment>
         <rdfs:label xml:lang="en">universal</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9312,6 +9319,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T04:04:39.522325Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;thick cut&apos;, &apos;thick sliced&apos;, &apos;thick crust&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">thick</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9323,7 +9331,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T04:04:39.523052Z</oboInOwl:creation_date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;low fat&apos;, &apos;low calorie&apos;, &apos;low sodium&apos;, &apos;low moisture&apos;, &apos;low glycemic&apos;, &apos;low carb&apos;, &apos;low sugar&apos;, &apos;low salt&apos;</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;low fat&apos;, &apos;low calorie&apos;, &apos;low sodium&apos;, &apos;low moisture&apos;, &apos;low glycemic&apos;, &apos;low carb&apos;, &apos;low sugar&apos;, &apos;low salt&apos;, &apos;low protein&apos;, &apos;low fiber&apos;, &apos;low liner&apos;, &apos;low vitamin&apos;, &apos;low energy&apos;, &apos;low performance&apos;, &apos;low pressure&apos;, &apos;low quality&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">low</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9335,7 +9343,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T04:04:39.523764Z</oboInOwl:creation_date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;high fat&apos;, &apos;high calorie&apos;, &apos;high sodium&apos;, &apos;high moisture&apos;, &apos;high glycemic&apos;, &apos;high carb&apos;, &apos;high sugar&apos;, &apos;high salt&apos;</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;high protein&apos;, &apos;high fiber&apos;, &apos;high liner&apos;, &apos;high vitamin&apos;, &apos;high energy&apos;, &apos;high performance&apos;, &apos;high pressure&apos;, &apos;high quality&apos;, &apos;high fat&apos;, &apos;high calorie&apos;, &apos;high sodium&apos;, &apos;high moisture&apos;, &apos;high glycemic&apos;, &apos;high carb&apos;, &apos;high sugar&apos;, &apos;high salt&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">high</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9406,6 +9414,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.080116Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;flaky crust&apos;, &apos;flaky layers&apos;, &apos;flaky biscuits&apos;, &apos;flaky crescent&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">flaky</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9417,6 +9426,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.080857Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;flame grilled&apos;, &apos;flame roasted&apos;, &apos;flame seared&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">flame</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9428,6 +9438,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.081616Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;flat half&apos;, &apos;flat bread&apos;, &apos;flat fillets&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">flat</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9439,6 +9450,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.082355Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;garden blend&apos;, &apos;garden delight&apos;, &apos;garden mix&apos;, &apos;garden fresh&apos;, &apos;garden style&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">garden</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9450,6 +9462,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.083086Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:gold emblem&apos;, &apos;gold quality&apos;, &apos;gold mashed&apos;, &apos;gold shield&apos;, &apos;gold tiny&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">gold</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9460,8 +9473,9 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
     <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000131">
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
-        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.083808Z</oboInOwl:creation_date>
-        <rdfs:label xml:lang="en">grilled</rdfs:label>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T19:40:50.838543Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;great value&apos;, &apos;great tasting&apos;</rdfs:comment>
+        <rdfs:label xml:lang="en">great</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -9471,8 +9485,9 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
     <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000132">
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
-        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.084585Z</oboInOwl:creation_date>
-        <rdfs:label xml:lang="en">grove</rdfs:label>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T19:40:50.839457Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;hot smoked&apos;, &apos;hot pickled&apos;, &apos;hot link&apos;, &apos;hot mix&apos;, &apos;hot spicy&apos;, &apos;hot chile&apos;, &apos;hot red&apos;</rdfs:comment>
+        <rdfs:label xml:lang="en">hot</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -9482,8 +9497,8 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
     <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000133">
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
-        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.08533Z</oboInOwl:creation_date>
-        <rdfs:label xml:lang="en">gulf</rdfs:label>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.808238Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">heritage</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -9495,6 +9510,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.086075Z</oboInOwl:creation_date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;half iced&apos;, &apos;half sub&apos;, &apos;half lemonade&apos;, &apos;half loaf&apos;, &apos;half milk&apos;, &apos;half ultra-pasteurized&apos;, &apos;half cream&apos;, &apos;half sour&apos;, &apos;half tea&apos;</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:half iced&apos;, &apos;half ultra-pasteurized&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">half</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9505,8 +9521,8 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
     <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000135">
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
-        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.086818Z</oboInOwl:creation_date>
-        <rdfs:label xml:lang="en">handcrafted</rdfs:label>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.809329Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">home</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -9517,6 +9533,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.087536Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;hard cooked&apos;, &apos;hard boiled&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">hard</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9528,6 +9545,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.088266Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;hash brown&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">hash</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9538,8 +9556,8 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
     <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000138">
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
-        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.089091Z</oboInOwl:creation_date>
-        <rdfs:label xml:lang="en">hatch</rdfs:label>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.810396Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">international</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -9550,6 +9568,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.089944Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;health mix&apos;, &apos;health ready&apos;, &apos;health food&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">health</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9561,6 +9580,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.090695Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;healthy choice&apos;, &apos;healthy mix&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">healthy</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9572,6 +9592,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.091468Z</oboInOwl:creation_date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;hearty chicken&apos;, &apos;hearty beef&apos;, &apos;hearty wheat&apos;, &apos;hearty oatmeal&apos;, &apos;hearty soup&apos;, &apos;hearty whole&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">hearty</rdfs:label>
     </owl:NamedIndividual>
     
@@ -9583,7 +9604,7 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
         <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-18T21:14:21.092217Z</oboInOwl:creation_date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;heavy syrup&apos;, &apos;heavy whipping&apos;, &apos;heavy juice&apos;</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Usage cases in food domain:&apos;heavy whipping&apos;</rdfs:comment>
         <rdfs:label xml:lang="en">heavy</rdfs:label>
     </owl:NamedIndividual>
     
@@ -16210,6 +16231,743 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
         <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-20T03:21:13.060962Z</oboInOwl:creation_date>
         <rdfs:label xml:lang="en">Zimbabwean</rdfs:label>
     </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000771 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000771">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.812258Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">large</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000772 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000772">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.8137Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">light</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000773 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000773">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.815089Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">limited</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000774 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000774">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.817249Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">masala</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000775 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000775">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.819446Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">mini</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000776 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000776">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.821588Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">multi</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000777 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000777">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.823704Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">new</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000778 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000778">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.828465Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">non</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000779 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000779">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.831669Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">paper</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000780 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000780">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.834855Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">party</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000781 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000781">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.838062Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">plain</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000782 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000782">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.840349Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">plastic</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000783 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000783">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.842499Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pocket</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000784 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000784">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.84461Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pop</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000785 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000785">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.846765Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">positive</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000786 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000786">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.848914Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pot</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000787 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000787">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.851039Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">power</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000788 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000788">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.853178Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pre</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000789 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000789">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.855296Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">prime</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000790 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000790">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.857419Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">private</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000791 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000791">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.85952Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pub</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000792 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000792">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.861685Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">punch</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000793 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000793">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.863802Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">pure</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000794 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000794">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.865917Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">quality</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000795 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000795">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.868123Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">quarter</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000796 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000796">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.87028Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">queso</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000797 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000797">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.87241Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">quick</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000798 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000798">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.87455Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">quinoa</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000799 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000799">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.876665Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">range</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000800 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000800">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.878761Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">ready</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000801 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000801">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.880879Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">real</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000802 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000802">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.882979Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">really</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000803 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000803">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.885126Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">recipe</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000804 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000804">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.887695Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">recovery</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000805 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000805">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.889989Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">regular</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000806 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000806">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.892233Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">renaissance</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000807 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000807">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.894484Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">replacement</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000808 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000808">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.896751Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">retail</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000809 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000809">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.898945Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">royal</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000810 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000810">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.901247Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">salty</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000811 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000811">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.903536Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">seaside</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000812 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000812">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.905778Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">seasonal</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000813 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000813">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.907992Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">select</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000814 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000814">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.910219Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">semi</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000815 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000815">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.912387Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">sharp</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000816 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000816">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.914459Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">shoulder</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000817 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000817">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.916628Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">side</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000818 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000818">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.918871Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">signature</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000819 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000819">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.921078Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">silky</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000820 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000820">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.923268Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">simply</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000821 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000821">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.925521Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">slightly</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000822 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000822">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.927764Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">slow</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000823 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000823">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.929982Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">small</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000824 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000824">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.932246Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">smart</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000825 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000825">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.934502Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">smoky</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000826 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000826">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.936828Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">smooth</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000827 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000827">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.939059Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">sparkling</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000828 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000828">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.941416Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">special</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000829 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000829">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.943716Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">specially</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000830 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000830">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.946003Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">specialty</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000831 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000831">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.94824Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">splendid</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000832 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000832">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.950415Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">split</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000833 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000833">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.952647Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">spring</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000834 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000834">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.954855Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">square</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000835 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000835">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.957076Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">star</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000836 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000836">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.959286Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">sticky</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://genepio.org/ontology/lexmapr/AGENCY_0000837 -->
+
+    <owl:NamedIndividual rdf:about="http://genepio.org/ontology/lexmapr/AGENCY_0000837">
+        <rdf:type rdf:resource="http://genepio.org/ontology/lexmapr/AGENCY_0000079"/>
+        <oboInOwl:created_by rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gurinder Gosal</oboInOwl:created_by>
+        <oboInOwl:creation_date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2019-06-21T20:40:37.961498Z</oboInOwl:creation_date>
+        <rdfs:label xml:lang="en">stir</rdfs:label>
+    </owl:NamedIndividual>
     <rdf:Description>
         <obo:IAO_0000412 rdf:resource="http://purl.obolibrary.org/obo/envo.owl"/>
     </rdf:Description>
@@ -16217,5 +16975,5 @@ The oblong fruits are up to 6.25 cm long. The russet-brown skin of the fruits is
 
 
 
-<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.5.10) https://github.com/owlcs/owlapi -->
 

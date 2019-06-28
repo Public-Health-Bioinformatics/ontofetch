@@ -1,0 +1,31 @@
+{
+    "AGENCY:0000002": [
+        "owl:someValuesFrom",
+        "FOODON:00001635"
+    ],
+    "AGENCY:0000007": [
+        "owl:qualifiedCardinality",
+        "1",
+        [
+            "owl:unionOf",
+            "ENVO:02000047",
+            "FOODON:03309997"
+        ]
+    ],
+    "AGENCY:0000041": [
+        "owl:intersectionOf",
+        "owl:someValuesFrom",
+        [
+            "owl:unionOf",
+            "FOODON:00001172",
+            "FOODON:03306867",
+            "FOODON:03411213",
+            "FOODON:00002099"
+        ],
+        [
+            "owl:complementOf",
+            "owl:someValuesFrom",
+            "FOODON:03306867"
+        ]
+    ]
+}

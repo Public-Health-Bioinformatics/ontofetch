@@ -10,17 +10,14 @@
 	URL and imports all ontology class terms, including labels, 
 	definitions, and boolean axioms.  Output is produced as json or tabular tsv.
 	
-	The focus is on elaborating boolean axioms into their parts.  Each part has a parent:
-	
-		negation: id of term or anon node 
-		conjunction:
-		disjunction:
+	The focus is on elaborating boolean axioms into their parts.
 
 	REQUIREMENTS
 	This script requires python module RDFLib.
 
 	EXAMPLES
-	Retrieve local file root-ontology.owl and print boolean matching expressions.
+	Retrieve local file root-ontology.owl and establish dictionary of rules 
+	(each a class) to boolean matching expressions.
 
 		> python ontoaxiom.py root-ontology.owl -r http://genepio.org/ontology/lexmapr/AGENCY_0000001 
 	
@@ -47,6 +44,8 @@ def stop_err(msg, exit_code = 1):
 	sys.stderr.write("%s\n" % msg)
 	sys.exit(exit_code)
 
+
+
 class MyParser(optparse.OptionParser):
 	"""
 	Allows formatted help info.  From http://stackoverflow.com/questions/1857346/python-optparse-how-to-include-additional-info-in-usage-output.
@@ -62,7 +61,8 @@ class OntologyBuckets(object):
 	"""
 
 	CODE_VERSION = '0.0.3'
-
+	TEST = 1 # = 1 to test a hardcoded small subset of .owl ontology rules.
+	
 	def __init__(self):
 
 		self.onto_helper = oh.OntoHelper()
@@ -75,7 +75,7 @@ class OntologyBuckets(object):
 			# via 'has member' relation between a parent_id entity and children.
 			# 
 			# This script returns all triples that immediately compose the
-			# owl.restriction. Below is simplest case
+			# owl.subject (aka owl.restriction). Below is simplest case
 			#
 			#   <owl:Restriction>
             #      <owl:onProperty rdf:resource="obi:AGENCY_0000078"/>
@@ -85,21 +85,26 @@ class OntologyBuckets(object):
 
 			'report_mapping': rdflib.plugins.sparql.prepareQuery("""
 
-				SELECT DISTINCT ?label ?parent_id ?restriction ?predicate ?object
+				SELECT DISTINCT ?label ?parent_id ?subject ?predicate ?object
 				WHERE {
 					BIND (AGENCY:AGENCY_0000078 as ?has_member).  # MIGRATE TO RO:has member
 					
 					?parent_id rdfs:subClassOf* ?root.
-					?parent_id owl:equivalentClass ?restriction.
+					?parent_id owl:equivalentClass ?subject.
 					?parent_id rdfs:label ?label.
-					?restriction owl:onProperty ?has_member.
-					?restriction (owl:someValuesFrom | owl:qualifiedCardinality | owl:minQualifiedCardinality | owl:maxQualifiedCardinality) ?object.
-					?restriction ?predicate ?object.
+					{	?subject owl:onProperty ?has_member.
+						?subject (owl:someValuesFrom | owl:qualifiedCardinality | owl:minQualifiedCardinality | owl:maxQualifiedCardinality) ?object.
+					}
+					UNION
+					{	?subject (owl:intersectionOf | owl:unionOf |  owl:complementOf) ?object.
+					}
+					?subject ?predicate ?object.
 
 				 } ORDER BY ?parent_id
 
 			""", initNs = self.onto_helper.namespace),
 
+			# Anything is retrieved here, including annotations
 			'triple_by_subject': rdflib.plugins.sparql.prepareQuery("""
 
 				SELECT DISTINCT ?predicate ?object
@@ -108,7 +113,7 @@ class OntologyBuckets(object):
 
 			""", initNs = self.onto_helper.namespace),
 
-			# This query weeds out unneeded annotations.
+			# This query focuses on restriction parts and weeds out unneeded annotations.
 			'triple_by_relation': rdflib.plugins.sparql.prepareQuery("""
 
 				SELECT DISTINCT ?predicate ?object
@@ -127,8 +132,8 @@ class OntologyBuckets(object):
 		we can expect in a bucket matching expression ('has member' axiom). 
 		The dictionary contains datatypes as keys that object's data type 
 		should match to, and for the match, a response specific to that 
-		datatype. Recursion is carried out where the object is a BNode that 
-		must be investigated further.
+		datatype. Recursion is carried out where the object is a BNode (blank
+		or anonymous node) that must be investigated further.
 
 		NOTE: If ontobucket.py prints out an error of form "unrecognized 
 		predicate [BIG LONG PREFIX]" and you need that predicate, then 
@@ -137,31 +142,39 @@ class OntologyBuckets(object):
 		"""
 		self.PREDICATE_SET = {
 			'owl:someValuesFrom': {
-				str: self.render_object_text, # A string value / term id
-				rdflib.term.BNode: self.render_BNode, 
+				str: self.get_component_object_text, # A string value / term id
+				rdflib.term.BNode: self.get_component_BNode, 
 			},
-			# The cardinality cases all require function to fetch content
-			'owl:qualifiedCardinality': 	{dict: self.render_cardinality},
-			'owl:minQualifiedCardinality':	{dict: self.render_cardinality},
-			'owl:maxQualifiedCardinality':	{dict: self.render_cardinality},
+			# These cases all require further function to fetch content
+			'owl:qualifiedCardinality': 	{dict: self.get_component_cardinality},
+			'owl:minQualifiedCardinality':	{dict: self.get_component_cardinality},
+			'owl:maxQualifiedCardinality':	{dict: self.get_component_cardinality},
+
 			 # used in conjunction with cardinality
-			 # SHORTCUT, otherwise self.render_BNode 
-			'owl:onClass': {rdflib.term.BNode: self.render_set},
-			'owl:intersectionOf': {rdflib.term.BNode: self.render_BNode},
-			'owl:unionOf': {rdflib.term.BNode: self.render_BNode},
+			 # SHORTCUT, otherwise self.get_component_BNode 
+			'owl:onClass': {rdflib.term.BNode: self.get_component_set},
+			'owl:intersectionOf': {rdflib.term.BNode: self.get_component_BNode},
+			'owl:unionOf': {rdflib.term.BNode: self.get_component_BNode},
 			'owl:complementOf': {
-				str: self.render_object_text, # A negated ontology id,
-				rdflib.term.BNode: self.render_BNode, #self.render_set # SHORTCUT????
+				str: self.get_component_object_text, # A negated ontology id,
+				rdflib.term.BNode: self.get_component_BNode, #self.get_component_set # SHORTCUT????
 			},
+
+			# self.get_component_object_text, # would return 'has member' or whichever relation was involved
+			'owl:onProperty': {str: self.get_component_blank}, 
+
+			# These two indicate a collection (list of expressions)
 			'rdf:first': {
-				rdflib.term.BNode: self.render_BNode,
-				str: self.render_object_text # The ontology id
+				rdflib.term.BNode: self.get_component_BNode,
+				str: self.get_component_object_text # The ontology id
 			},
 			'rdf:rest': {
-				rdflib.term.BNode: self.render_BNode,
-				str: self.render_blank # signals end of script
+				rdflib.term.BNode: self.get_component_BNode,
+				str: self.get_component_blank # signals end of script
 			},
-			'rdf:type': {str: self.render_blank} # Uninformative class
+			# Instance or Class.  Not really informative unless some 
+			# distinction is being made about them.
+			'rdf:type': {str: self.get_component_blank} 
 		}
 
 
@@ -211,10 +224,106 @@ class OntologyBuckets(object):
 		for term_id in options.root_uri.split(','):
 
 			# THE ONE CALL TO GET REPORT CATEGORY BOOLEAN EXPRESSIONS
-			self.log('report_mapping')
-			self.do_membership_rules(term_id)
+			self.log('bucket rule compilation for', term_id)
 
-		# FUTURE: WRITE OUT FILE HERE.
+			# If user has provided a set of comparison ids then actually 
+			# execute bucket rules on them and return a boolean result for
+			# each rule.
+			bucket_rules = self.do_membership_rules(term_id)
+
+		# If output folder specified then write out bucket rule file 
+		if (options.output_folder):
+			
+			self.onto_helper.do_output_json(bucket_rules, output_file_basename)
+
+		self.log('bucket reporting')
+		# FUTURE: ALTERNATELY, INPUT TSV FILE OR JSON WITH records of hits
+		if options.comparison_ids:
+			comparison_set = set(options.comparison_ids.split(','))
+			for rule in bucket_rules:
+				do_bucket_rule(copy.deepcopy(rule), comparison_set)
+
+
+	def do_bucket_rule(self, rule, comparison_set):
+		"""
+		The first parameter of a rule is one of the predicates. Remaining
+		parameters are either cardinality restriction limits, or boolean
+		set operators, or entity id references (strings).
+
+		Picture the comparison_set as a class or instance having 'has member'
+		relations to all its elements.  The rule expression is one or more
+		tests of given elements against the comparison_set 'has member' items.
+		"""
+		rule_fn = rule.pop(0)
+
+		# CARDINALITY SPECIFIES NUMBER OF ITEMS THAT CAN MATCH. USUALLY WITH 
+		# CATEGORY MATCHING RULES one or more supporting (or negated) piece
+		# of evidence is all we care about, but exact cardinality is also
+		# enabled below.
+		# Cardinality rules return boolean True / False, which means that 
+		# parent term must work on boolean values.
+
+		# 'member of' some ~= one or more 'member of ' relations to entities.
+		if (rule_fn == 'owl:someValuesFrom'):
+			return (len(do_collection(rule, comparison_set)) > 0)
+
+		# Issue: check about recognition of combined min/max cardinality.
+		if (rule_fn == 'owl:qualifiedCardinality'):
+			limit = rule.pop(0)
+			return (len(do_collection(rule, comparison_set)) == limit)
+
+		if (rule_fn == 'owl:minQualifiedCardinality'):
+			limit = rule.pop(0)
+			return (len(do_collection(rule, comparison_set)) >= limit)
+
+		if (rule_fn == 'owl:maxQualifiedCardinality'):
+			limit = rule.pop(0)
+			return (len(do_collection(rule, comparison_set)) <= limit)
+
+		# Unused; 'owl:onProperty' not currently part of the rule syntax.
+		#if (rule_fn == 'owl:onProperty'):
+		#	return 
+
+		# Matches to expressions like "a and b and c" but these would rarely
+		# be entity references directly - if they were the constraint would be
+		# that rule was indicating that member was simultaniously class a, b, c.
+		# Instead, usually each entity would be an expression of predicate link 
+		# 'has member' to some condition on presence or absense of member 
+		# elements, i.e. more likely used in form of "(expression a) and 
+		# (expression b)" where each expression is placing constraints on 
+		# comparison_set elements.
+		if (rule_fn == 'owl:intersectionOf'):
+			bucket_set = set(do_collection(rule, comparison_set))
+			return all( bucket_set.intersection(comparison_set) )
+
+		# Matches to expressions like "a or b or c". Each can generate a True/
+		# False hit on comparison_set.
+		# JUST RETURN THE ITEMS THAT MATCHED.
+		if (rule_fn == 'owl:unionOf'):
+			bucket_set = set(do_collection(rule, comparison_set))
+			return any( bucket_set.intersection(comparison_set) )
+
+		# Matches to expressions like "not (a or b or c) ... " meaning
+		# none of the target elements should be present in the comparison_set.
+		if (rule_fn == 'owl:complementOf'):
+			bucket_set = set(do_collection(rule, comparison_set))
+			return not any(bucket_set)
+
+		# Error condition, something should have matched above.
+		return false 
+
+
+	# A read-ahead would know which logical function was going to be applied
+	# and could return on first instance of a true or false value.
+	def do_collection(self, collection, comparison_set):
+		for ptr in collection: # A list: 0, 1, 2... key
+			item = collection[ptr]
+			if type(item) == str:
+				collection[ptr] = item in comparison_set
+			else:
+				collection[ptr] = do_bucket_rule(item, comparison_set)
+
+		return collection
 
 
 	def do_membership_rules(self, term_id):
@@ -238,14 +347,20 @@ class OntologyBuckets(object):
 
 		print ("Buckets:", len(table))
 
-		for triple in table:
+		bucket_rules = {}
+
+		# At this level each triple is a bucket-matching rule
+		for triple in table: 
 			# TEST EXAMPLES
-			#if not triple['parent_id'] in (['AGENCY:0000002', 'AGENCY:0000007', 'AGENCY:0000041']):
-			#	continue
+
+			if self.TEST and self.TEST == 1 and not triple['parent_id'] in (['AGENCY:0000002', 'AGENCY:0000007', 'AGENCY:0000041']):
+				continue
+			
+			bucket_rules[triple['parent_id']] = self.do_triple(triple)
 
 			print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
 
-		return
+		return bucket_rules
 
 
 	def do_triple(self, triple):
@@ -270,7 +385,7 @@ class OntologyBuckets(object):
 		return t_triple_fn(triple)
 
 
-	def render_object_text(self, triple): 
+	def get_component_object_text(self, triple): 
 		t_object = triple['object']
 		if triple['predicate'] == 'rdf:first':
 			return t_object
@@ -278,27 +393,28 @@ class OntologyBuckets(object):
 		return [triple['predicate'], t_object]
 
 
-	def render_set(self, triple): 
+	def get_component_set(self, triple): 
 		"""
 		For the QualifiedCardinality nodes, rdflib adds a shortcut "expression"
 		key-value dictionary which contains "datatype" [disjunction|conjunction]
 		and a "data" key that is a list of ontology entity ids. This appears to
 		be triggered by a rdf:parseType="Collection" attribute.
+
+		HOWEVER, if Collection item is complex, does this shortcut still work?
 		"""
 		datatype = 'owl:unionOf' if triple['expression']['datatype'] else 'owl:intersectionOf'
 
 		return [datatype] + triple['expression']['data']
 
 
-	def render_cardinality(self, triple): 
+	def get_component_cardinality(self, triple): 
 		"""
 		The cardinality cases all require 2nd query to fetch content
 		"""
 		result = [triple['predicate'], triple['object']['value']]
 
-		# Cardinality references only one triple, so triples[0].
 		triples = self.onto_helper.do_query_table(
-			self.queries['triple_by_relation'], {'subject': triple['restriction'] } # ON RESTRICTION
+			self.queries['triple_by_relation'], {'subject': triple['subject'] } # ON RESTRICTION
 		)
 		for bnode_triple in triples:
 			bnode_result = self.do_triple(bnode_triple)
@@ -307,11 +423,12 @@ class OntologyBuckets(object):
 		return result # ISSUE: parts may be rdflib.term.BNode
 		
 
-	def render_BNode(self, triple):
+	def get_component_BNode(self, triple):
 
 		result = []
 
 		# Find subordinate tripples that begin with triple's object.
+		# Basically none of these are annotations
 		triples = self.onto_helper.do_query_table(
 			self.queries['triple_by_subject'], {'subject': triple['object'] }
 		)
@@ -332,11 +449,11 @@ class OntologyBuckets(object):
 		return result
 
 
-	def render_dump(self, triple):
+	def render_debug(self, triple):
 		return ("DEBUG:", json.dumps(triple, sort_keys=False, indent=4, separators=(',', ': ')))
 
 
-	def render_blank(self, triple):
+	def get_component_blank(self, triple):
 		return None
 
 
@@ -356,7 +473,9 @@ class OntologyBuckets(object):
 		parser.add_option('-v', '--version', dest='code_version', default=False, action='store_true', help='Return version of this code.')
 
 		parser.add_option('-o', '--output', dest='output_folder', type='string', help='Path of output file to create')
-		
+
+		parser.add_option('-i', '--input', dest='comparison_ids', type='string', help='Comma separated list of term ids to match rules to.')
+
 		parser.add_option('-r', '--root', dest='root_uri', type='string', help='Comma separated list of full URI root entity ids to fetch underlying terms from. Defaults to owl#Thing.', default='http://www.w3.org/2002/07/owl#Thing')
 
 		return parser.parse_args()

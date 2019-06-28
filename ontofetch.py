@@ -355,10 +355,11 @@ class Ontology(object):
 			for field in self.onto_helper.SYNONYM_FIELDS:
 
 				if row[field]: 
-					# Clean up synonym phrases.  Insisting on terms separated
-					# by comma+space because chemistry expressions have tight
+					# Clean up synonym phrases.  Can't split comma-delimited synonyms
+					# because a number of ontologies have phrase synonyms with commas
+					# in them.  Also chemistry expressions have tight (no space)
 					# comma separated synonyms
-					phrases = row[field].replace('\\n', ';').strip().replace(', ',';').replace('"','').split(';')
+					phrases = row[field].replace('\\n', ';').strip().replace('"','').split(';')
 					if phrases:
 						if field in spec:
 							spec[field] += phrases
