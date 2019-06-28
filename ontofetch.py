@@ -362,7 +362,7 @@ class Ontology(object):
 					phrases = row[field].replace('\\n', ';').strip().replace('"','').split(';')
 					if phrases:
 						prefix_field = field.replace('_',':',1)
-						if field in spec:
+						if prefix_field in spec:
 							spec[prefix_field] += phrases
 						else:
 							spec[prefix_field] = phrases
