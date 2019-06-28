@@ -361,10 +361,11 @@ class Ontology(object):
 					# comma separated synonyms
 					phrases = row[field].replace('\\n', ';').strip().replace('"','').split(';')
 					if phrases:
+						prefix_field = field.replace('_',':',1)
 						if field in spec:
-							spec[field] += phrases
+							spec[prefix_field] += phrases
 						else:
-							spec[field] = phrases
+							spec[prefix_field] = phrases
 
 
 	def get_command_line(self):

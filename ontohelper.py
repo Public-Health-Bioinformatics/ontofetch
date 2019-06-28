@@ -47,7 +47,7 @@ def stop_err(msg, exit_code = 1):
 class OntoHelper(object):
 
 	CODE_VERSION = '0.0.3'
-	SYNONYM_FIELDS = ['synonym','broad_synonym','narrow_synonym','exact_synonym','alternative_term']
+	SYNONYM_FIELDS = ['oboInOwl_hasSynonym','oboInOwl_hasBroadSynonym','oboInOwl_hasExactSynonym','oboInOwl_hasNarrowSynonym','IAO_0000118']
 
 	def __init__(self):
 
@@ -139,14 +139,19 @@ class OntoHelper(object):
 			#
 			'entity_synonyms': prepareQuery("""
 
-				SELECT DISTINCT ?datum ?synonym ?broad_synonym ?exact_synonym ?narrow_synonym ?alternative_term
+				SELECT DISTINCT ?datum 
+					?oboInOwl_hasSynonym 
+					?oboInOwl_hasBroadSynonym 
+					?oboInOwl_hasExactSynonym 
+					?oboInOwl_hasNarrowSynonym 
+					?IAO_0000118
 				WHERE {  
 					{?datum rdf:type owl:Class} UNION {?datum rdf:type owl:NamedIndividual}.
-					{?datum oboInOwl:hasSynonym ?synonym.} 
-					UNION {?datum oboInOwl:hasBroadSynonym ?broad_synonym.}
-					UNION {?datum oboInOwl:hasExactSynonym ?exact_synonym.}
-					UNION {?datum oboInOwl:hasNarrowSynonym ?narrow_synonym.}
-					UNION {?datum IAO:0000118 ?alternative_term.}
+					{?datum oboInOwl:hasSynonym ?oboInOwl_hasSynonym.} 
+					UNION {?datum oboInOwl:hasBroadSynonym ?oboInOwl_hasBroadSynonym.}
+					UNION {?datum oboInOwl:hasExactSynonym ?oboInOwl_hasExactSynonym.}
+					UNION {?datum oboInOwl:hasNarrowSynonym ?oboInOwl_hasNarrowSynonym.}
+					UNION {?datum IAO:0000118 ?IAO_0000118.}
 				}
 			""", initNs = self.namespace),
 			
