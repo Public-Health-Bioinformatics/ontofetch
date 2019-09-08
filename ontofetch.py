@@ -29,6 +29,10 @@
 
 		> python ontofetch.py https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl -o test/ -r http://purl.obolibrary.org/obo/OBI_0200111,http://purl.obolibrary.org/obo/IAO_0000572
 
+	Retrieve Zebra Fish Ontology
+		> python3 ../../ontofetch/ontofetch.py http://purl.obolibrary.org/obo/zfa.owl -r http://purl.obolibrary.org/obo/ZFA_0100000 -o ./
+
+
 	FUTURE: Get ontology version, and add to "version" field
 	
 	**************************************************************************
