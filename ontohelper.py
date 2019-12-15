@@ -46,7 +46,7 @@ def stop_err(msg, exit_code = 1):
 
 class OntoHelper(object):
 
-	CODE_VERSION = '0.0.3'
+	CODE_VERSION = '0.0.4'
 	SYNONYM_FIELDS = ['oboInOwl_hasSynonym','oboInOwl_hasBroadSynonym','oboInOwl_hasExactSynonym','oboInOwl_hasNarrowSynonym','IAO_0000118']
 
 	def __init__(self):
@@ -248,21 +248,26 @@ class OntoHelper(object):
 		 OUTPUT
 		 	:string
 		 """
+
+		# A term URI with a # component is assumed not to be an HTML anchor
+		# per se, but rather the term identifier itself.
+
 		if myURI[0:4] == 'http':
 
-			if '_' in myURI:
-				(path, fragment) = myURI.rsplit('_',1)
-				separator = '_'
-
-			elif '#' in myURI: # Need '#' test first!    path#fragment
+			if '#' in myURI: # Need '#' test first!    path#fragment
 				(path, fragment) = myURI.rsplit('#',1)
 				separator = '#'
+
+			elif '_' in myURI:
+				(path, fragment) = myURI.rsplit('_',1)
+				separator = '_'
 
 			else:
 
 				(path, fragment) = myURI.rsplit('/',1)
 				separator = '/'
 			
+
 			full_path = path + separator
 
 			for prefix, context_prefix in self.struct['@context'].items():
@@ -283,6 +288,7 @@ class OntoHelper(object):
 				self.struct['@context'][prefix] = full_path
 				return prefix + ":" + fragment
 
+			# print (full_path, ' ', fragment)
 
 		return myURI 		# Returns untouched string
 

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 """ **************************************************************************
 	python ontofetch.py [owl ontology file path or URL]
@@ -123,7 +122,6 @@ class Ontology(object):
 			# These are annotations directly on an entity.  This is the only place
 			# that ui_label and ui_definition should really operate. Every entity
 			# in OWL file is retrieved for their rdfs:label, IAO definition etc.
-			# FUTURE: ADD SORTING OPTIONS, CUSTOM ORDER.
 			'entity_text': prepareQuery("""
 
 				SELECT DISTINCT ?label ?definition ?ui_label ?ui_definition
@@ -213,7 +211,9 @@ class Ontology(object):
 			print ('Doing terms: ' + str(len(entities)) )
 			self.do_entities(entities)
 		
+		# JSON data structure output
 		self.onto_helper.do_output_json(self.onto_helper.struct, output_file_basename)
+		# Tab separated version
 		self.onto_helper.do_output_tsv(self.onto_helper.struct, output_file_basename, self.fields)
 
 

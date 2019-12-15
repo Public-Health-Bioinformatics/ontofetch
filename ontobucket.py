@@ -17,9 +17,11 @@
 
 	EXAMPLES
 	Retrieve local file root-ontology.owl and establish dictionary of rules 
-	(each a class) to boolean matching expressions.
+	(each a class) to boolean matching expressions. Here LEXMAPR_0000001 is root
+	term of a particular agency branch of buckets in the lexmapr agency ontology
+	https://webprotege.stanford.edu/#projects/ff881d2b-1d6b-42ba-82f2-cc66130c9467/edit/Classes
 
-		> python ontoaxiom.py root-ontology.owl -r http://genepio.org/ontology/lexmapr/AGENCY_0000001 
+		> python ontobucket.py root-ontology.owl -r http://genepio.org/ontology/LEXMAPR_0000001 
 	
 	**************************************************************************
 """ 
@@ -61,7 +63,7 @@ class OntologyBuckets(object):
 	"""
 
 	CODE_VERSION = '0.0.3'
-	TEST = 1 # = 1 to test a hardcoded small subset of .owl ontology rules.
+	TEST = 0 # = 1 to test a hardcoded small subset of .owl ontology rules.
 	
 	def __init__(self):
 
@@ -78,8 +80,8 @@ class OntologyBuckets(object):
 			# owl.subject (aka owl.restriction). Below is simplest case
 			#
 			#   <owl:Restriction>
-            #      <owl:onProperty rdf:resource="obi:AGENCY_0000078"/>
-            #      <owl:someValuesFrom rdf:resource="obi:FOODON_00002196"/>
+            #      <owl:onProperty rdf:resource="obo:RO_0002351"/>
+            #      <owl:someValuesFrom rdf:resource="obo:FOODON_00002196"/>
             #   </owl:Restriction>			
 			#	...
 
@@ -87,7 +89,7 @@ class OntologyBuckets(object):
 
 				SELECT DISTINCT ?label ?parent_id ?subject ?predicate ?object
 				WHERE {
-					BIND (AGENCY:AGENCY_0000078 as ?has_member).  # MIGRATE TO RO:has member
+					BIND (OBO:RO_0002351 as ?has_member).  # MIGRATE TO RO:has member
 					
 					?parent_id rdfs:subClassOf* ?root.
 					?parent_id owl:equivalentClass ?subject.
@@ -353,7 +355,7 @@ class OntologyBuckets(object):
 		for triple in table: 
 			# TEST EXAMPLES
 
-			if self.TEST and self.TEST == 1 and not triple['parent_id'] in (['AGENCY:0000002', 'AGENCY:0000007', 'AGENCY:0000041']):
+			if self.TEST and self.TEST == 1 and not triple['parent_id'] in (['LEXMAPR:0000002', 'LEXMAPR:0000007', 'LEXMAPR:0000041']):
 				continue
 			
 			bucket_rules[triple['parent_id']] = self.do_triple(triple)
