@@ -31,6 +31,7 @@ import sys
 import os
 import optparse
 import datetime
+from copy import deepcopy
 
 #from ontohelper import OntoHelper as oh
 import ontohelper as oh
@@ -242,9 +243,70 @@ class OntologyBuckets(object):
 		# FUTURE: ALTERNATELY, INPUT TSV FILE OR JSON WITH records of hits
 		if options.comparison_ids:
 			comparison_set = set(options.comparison_ids.split(','))
-			for rule in bucket_rules:
-				do_bucket_rule(copy.deepcopy(rule), comparison_set)
+			for bucket_id, rule in bucket_rules.items():
+				output = self.do_bucket_rule(rule, comparison_set)
+				if (output):
+					print ("RULE:",bucket_id, output)
 
+	owl_rules = {
+
+		# CARDINALITY SPECIFIES NUMBER OF ITEMS THAT CAN MATCH. USUALLY WITH 
+		# CATEGORY MATCHING RULES one or more supporting (or negated) piece
+		# of evidence is all we care about, but exact cardinality is also
+		# enabled below.
+		# Cardinality rules return boolean True / False, which means that 
+		# parent term must work on boolean values.
+
+		# 'member of' some ~= one or more 'member of ' relations to entities.
+		'owl:someValuesFrom': 
+			lambda self, rule, comparison_set: 
+				self.do_collection(rule[1:], comparison_set, 'owl:someValuesFrom'),
+ 
+		# Issue: check about recognition of combined min/max cardinality.
+		'owl:qualifiedCardinality':
+			lambda self, rule, comparison_set: 
+				len(self.do_collection(rule[2:], comparison_set)) == rule[1],
+
+		'owl:minQualifiedCardinality': 
+			lambda self, rule, comparison_set: 
+				len(self.do_collection(rule[2:], comparison_set)) >= rule[1],
+
+		'owl:maxQualifiedCardinality': 
+			lambda self, rule, comparison_set: 
+				len(self.do_collection(rule[2:], comparison_set)) <= rule[1],
+
+		# Unused; 'owl:onProperty' not currently part of the rule syntax.
+		#if (rule_fn == 'owl:onProperty'):
+		#	return 
+
+		# Matches to expressions like "(a and b and c)" but these would rarely
+		# be entity references directly - if they were the constraint would be
+		# that rule was indicating that member was simultaniously class a, b, c.
+		# Instead, usually each entity would be an expression of predicate link 
+		# 'has member' to some condition on presence or absense of member 
+		# elements, i.e. more likely used in form of "(expression a) and 
+		# (expression b)" where each expression is placing constraints on 
+		# comparison_set elements.
+		'owl:intersectionOf':
+			lambda self, rule, comparison_set: 
+				all( set(self.do_collection(rule[1:], comparison_set)).intersection(comparison_set) ),
+
+		# Matches to expressions like "a or b or c". Each can generate a True/
+		# False hit on comparison_set.
+		# JUST RETURN THE ITEMS THAT MATCHED.
+		'owl:unionOf':
+			lambda self, rule, comparison_set: 
+				any( set(self.do_collection(rule[1:], comparison_set)).intersection(comparison_set) ),
+
+		# Matches to expressions like "not (a or b or c) ... " meaning
+		# none of the target elements should be present in the comparison_set.
+		'owl:complementOf':
+			lambda self, rule, comparison_set: 
+				not any(set(self.do_collection(rule[1:], comparison_set)) )
+				# Ideally just return the leaf element, not its ancestors.
+
+
+	}
 
 	def do_bucket_rule(self, rule, comparison_set):
 		"""
@@ -256,76 +318,38 @@ class OntologyBuckets(object):
 		relations to all its elements.  The rule expression is one or more
 		tests of given elements against the comparison_set 'has member' items.
 		"""
-		rule_fn = rule.pop(0)
+		#self.log("Doing rule", rule)
 
-		# CARDINALITY SPECIFIES NUMBER OF ITEMS THAT CAN MATCH. USUALLY WITH 
-		# CATEGORY MATCHING RULES one or more supporting (or negated) piece
-		# of evidence is all we care about, but exact cardinality is also
-		# enabled below.
-		# Cardinality rules return boolean True / False, which means that 
-		# parent term must work on boolean values.
-
-		# 'member of' some ~= one or more 'member of ' relations to entities.
-		if (rule_fn == 'owl:someValuesFrom'):
-			return (len(do_collection(rule, comparison_set)) > 0)
-
-		# Issue: check about recognition of combined min/max cardinality.
-		if (rule_fn == 'owl:qualifiedCardinality'):
-			limit = rule.pop(0)
-			return (len(do_collection(rule, comparison_set)) == limit)
-
-		if (rule_fn == 'owl:minQualifiedCardinality'):
-			limit = rule.pop(0)
-			return (len(do_collection(rule, comparison_set)) >= limit)
-
-		if (rule_fn == 'owl:maxQualifiedCardinality'):
-			limit = rule.pop(0)
-			return (len(do_collection(rule, comparison_set)) <= limit)
-
-		# Unused; 'owl:onProperty' not currently part of the rule syntax.
-		#if (rule_fn == 'owl:onProperty'):
-		#	return 
-
-		# Matches to expressions like "a and b and c" but these would rarely
-		# be entity references directly - if they were the constraint would be
-		# that rule was indicating that member was simultaniously class a, b, c.
-		# Instead, usually each entity would be an expression of predicate link 
-		# 'has member' to some condition on presence or absense of member 
-		# elements, i.e. more likely used in form of "(expression a) and 
-		# (expression b)" where each expression is placing constraints on 
-		# comparison_set elements.
-		if (rule_fn == 'owl:intersectionOf'):
-			bucket_set = set(do_collection(rule, comparison_set))
-			return all( bucket_set.intersection(comparison_set) )
-
-		# Matches to expressions like "a or b or c". Each can generate a True/
-		# False hit on comparison_set.
-		# JUST RETURN THE ITEMS THAT MATCHED.
-		if (rule_fn == 'owl:unionOf'):
-			bucket_set = set(do_collection(rule, comparison_set))
-			return any( bucket_set.intersection(comparison_set) )
-
-		# Matches to expressions like "not (a or b or c) ... " meaning
-		# none of the target elements should be present in the comparison_set.
-		if (rule_fn == 'owl:complementOf'):
-			bucket_set = set(do_collection(rule, comparison_set))
-			return not any(bucket_set)
+		rule_fn = rule[0]
+		if rule_fn in self.owl_rules:
+			return self.owl_rules[rule_fn](self, rule, comparison_set)
 
 		# Error condition, something should have matched above.
-		return false 
+		self.log("Error: unrecognized rule", rule_fn)
+		return False 
 
 
-	# A read-ahead would know which logical function was going to be applied
-	# and could return on first instance of a true or false value.
-	def do_collection(self, collection, comparison_set):
-		for ptr in collection: # A list: 0, 1, 2... key
-			item = collection[ptr]
+	# Limited implementation of lookahead function which will shortcut 
+	# evaluation for some logical functions, e.g. first true of a
+	# disjunction is returned.
+	def do_collection(self, collection, comparison_set, lookahead = None):
+		output = []
+		# self.log("doing collection:", collection)
+		for item in collection: # A list: 0, 1, 2... key
+
 			if type(item) == str:
-				collection[ptr] = item in comparison_set
+				result = item if (item in comparison_set) else None;
+				
 			else:
-				collection[ptr] = do_bucket_rule(item, comparison_set)
+				# A list or some other data structure, with first term likely some operator
+				result = (self.do_bucket_rule(item, comparison_set))
 
-		return collection
+			if result != False and lookahead == 'owl:someValuesFrom':
+				return result
+
+			output.append(result) 
+
+		return output
 
 
 	def do_membership_rules(self, term_id):
@@ -355,12 +379,13 @@ class OntologyBuckets(object):
 		for triple in table: 
 			# TEST EXAMPLES
 
-			if self.TEST and self.TEST == 1 and not triple['parent_id'] in (['LEXMAPR:0000002', 'LEXMAPR:0000007', 'LEXMAPR:0000041']):
+			if self.TEST == 1 and not triple['parent_id'] in (['LEXMAPR:0000002', 'LEXMAPR:0000007', 'LEXMAPR:0000041']):
 				continue
 			
 			bucket_rules[triple['parent_id']] = self.do_triple(triple)
 
-			print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
+			if self.TEST == 1:
+				print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
 
 		return bucket_rules
 
