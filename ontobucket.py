@@ -3,9 +3,13 @@
 """ **************************************************************************
 	python ontobucket.py [owl ontology file path or URL]
 
-	Enables creation and cached use of rules based on a given ontology's eqivalentTo statements containing 'has member' some/min x/max x/exactly x entity or expression.  Applying a rule set to a given set of entities (and their ancestor path ids) yields a list of triggered rules/buckets.
+	Enables creation and cached use of rules based on a given ontology's 
+	eqivalentTo statements containing 'has member' some/min x/max x/exactly x 
+	entity or expression.  Applying a rule set to a given set of entities 
+	(and their ancestor path ids) yields a list of triggered rules/buckets.
 
-	For rule matching, it relies on being given LexMapr search result hits AND their entire ancestral list of ids.
+	For rule matching, it relies on being given LexMapr search result hits AND
+	their entire ancestral list of ids.
  
  	Author: Damion Dooley
 
