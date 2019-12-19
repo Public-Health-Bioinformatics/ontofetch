@@ -465,7 +465,7 @@ class OntologyBuckets(object):
 		specBinding = {'root': rdflib.URIRef(term_id)} 
 		table = self.onto_helper.do_query_table(self.queries['report_mapping'], specBinding )
 
-		print ("Buckets:", len(table))
+		print ("Bucket count:", len(table))
 
 		bucket_rules = {}
 
@@ -521,7 +521,7 @@ class OntologyBuckets(object):
 
 		HOWEVER, if Collection item is complex, does this shortcut still work?
 		"""
-		print ("DATATYPE", triple['expression']['datatype'])
+		#print ("DATATYPE", triple['expression']['datatype'])
  
 		if triple['expression']['datatype']:
 			datatype = 'owl:unionOf'
@@ -564,7 +564,7 @@ class OntologyBuckets(object):
 			bnode_result = self.do_triple(bnode_triple);
 
 			if bnode_result:
-				if type(bnode_result) == str:   # singletonliteral value
+				if type(bnode_result) == str:   # singleton literal value
 					result.append(bnode_result)
 					#print("bnode whole append", bnode_result)
 				else:
