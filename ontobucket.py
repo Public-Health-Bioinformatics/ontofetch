@@ -2,7 +2,10 @@
 
 """ **************************************************************************
 	python ontobucket.py [owl ontology file path or URL]
-	Ontology fetch of category matching bucket definitions for given agency ids.
+
+	Enables creation and cached use of rules based on a given ontology's eqivalentTo statements containing 'has member' some/min x/max x/exactly x entity or expression.  Applying a rule set to a given set of entities (and their ancestor path ids) yields a list of triggered rules/buckets.
+
+	For rule matching, it relies on being given LexMapr search result hits AND their entire ancestral list of ids.
  
  	Author: Damion Dooley
 
@@ -19,13 +22,30 @@
 	cached [ontology].json file is.
 
 	EXAMPLES
-	Retrieve local file root-ontology.owl and establish dictionary of rules 
-	(each a class) to boolean matching expressions. Here LEXMAPR_0000001 is root
-	term of a particular agency branch of buckets in the lexmapr agency ontology
-	https://webprotege.stanford.edu/#projects/ff881d2b-1d6b-42ba-82f2-cc66130c9467/edit/Classes
 
-		> python ontobucket.py root-ontology.owl -r http://genepio.org/ontology/LEXMAPR_0000001 
-	
+
+	This makes a rule-set for any classes in a local ontology lexmapr.owl file
+	under LEXMAPR_0000001 (NARMS reporting bucket) a root term naming a 
+	particular agency branch of buckets.
+
+		python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001
+
+	This makes a rule set as above, and tests rules against FOODON:00001286
+	(turkey meat food product)
+	 
+		python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286
+
+
+	As above, but also writes out ruleset to a file called test/lexmapr.json
+
+		python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286 -o test/
+
+	As above, but also uses that test/lexmapr.json if it exists to run rules,
+	rather than generating it from scratch.
+
+		python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286 -o test/ -c
+
+
 	TEST CASES
 		> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286
 	I.e. "turkey meat food product" should lead to only:	
