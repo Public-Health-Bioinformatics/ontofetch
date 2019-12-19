@@ -502,9 +502,17 @@ class OntoHelper(object):
 
 
 	def check_ont_file(self, main_ontology_file, options):
-		# Input is either a file or URL
-		# e.g. https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl
+		""" 
 
+		INPUT 
+		main_ontology_file either a file path or URL, validated if a file path.
+			e.g. https://raw.githubusercontent.com/obi-ontology/obi/master/obi.owl
+		options.output_folder: optional relative folder, if any, to provide file output.
+
+		OUTPUT
+		main_ontology_file: validated if a file path.
+		output_file_basename: [absolute path] + [output_folder] + [base name of ontology]
+		"""
 		if main_ontology_file[0:4].lower() != 'http':
 			main_ontology_file = self.check_folder(main_ontology_file, "Ontology file")
 			if not os.path.isfile(main_ontology_file):

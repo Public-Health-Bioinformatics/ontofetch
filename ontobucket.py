@@ -15,6 +15,9 @@
 	REQUIREMENTS
 	This script requires python module RDFLib.
 
+	if --cache used, then --output folder is required in order to read where
+	cached [ontology].json file is.
+
 	EXAMPLES
 	Retrieve local file root-ontology.owl and establish dictionary of rules 
 	(each a class) to boolean matching expressions. Here LEXMAPR_0000001 is root
@@ -23,6 +26,12 @@
 
 		> python ontobucket.py root-ontology.owl -r http://genepio.org/ontology/LEXMAPR_0000001 
 	
+	TEST CASES
+		> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286
+	I.e. "turkey meat food product" should lead to only:	
+		LEXMAPR:0000073 True
+
+
 	**************************************************************************
 """ 
 
@@ -130,11 +139,12 @@ class OntologyBuckets(object):
 
 		}
 
+
 		"""
 		The "PREDICATE_SET" dictionary has for its keys the set of predicates
 		we can expect in a bucket matching expression ('has member' axiom). 
 		The dictionary contains datatypes as keys that object's data type 
-		should match to, and for the match, a response specific to that 
+		should match to, and for the match, a function specific to that 
 		datatype. Recursion is carried out where the object is a BNode (blank
 		or anonymous node) that must be investigated further.
 
@@ -155,11 +165,17 @@ class OntologyBuckets(object):
 
 			 # used in conjunction with cardinality
 			 # SHORTCUT, otherwise self.get_component_BNode 
-			'owl:onClass': {rdflib.term.BNode: self.get_component_set},
-			'owl:intersectionOf': {rdflib.term.BNode: self.get_component_BNode},
-			'owl:unionOf': {rdflib.term.BNode: self.get_component_BNode},
+			'owl:onClass': {rdflib.term.BNode: self.get_component_set}, # always BNode
+			'owl:intersectionOf': {
+				str: self.get_component_object_text,
+				rdflib.term.BNode: self.get_component_BNode
+				},
+			'owl:unionOf': {
+				str: self.get_component_object_text,
+				rdflib.term.BNode: self.get_component_BNode
+				},
 			'owl:complementOf': {
-				str: self.get_component_object_text, # A negated ontology id,
+				str: self.get_component_object_text, # A negated ontology id, I.e. ensure comparison_set doesn't have this element or child.
 				rdflib.term.BNode: self.get_component_BNode, #self.get_component_set # SHORTCUT????
 			},
 
@@ -168,17 +184,19 @@ class OntologyBuckets(object):
 
 			# These two indicate a collection (list of expressions)
 			'rdf:first': {
-				rdflib.term.BNode: self.get_component_BNode,
-				str: self.get_component_object_text # The ontology id
+				str: self.get_component_object_text, # The ontology id
+				rdflib.term.BNode: self.get_component_BNode
 			},
 			'rdf:rest': {
-				rdflib.term.BNode: self.get_component_BNode,
-				str: self.get_component_blank # signals end of script
+				str: self.get_component_blank, # signals end of list
+				rdflib.term.BNode: self.get_component_BNode
+
 			},
 			# Instance or Class.  Not really informative unless some 
 			# distinction is being made about them.
 			'rdf:type': {str: self.get_component_blank} 
 		}
+
 
 
 	def log(self, *args):
@@ -208,44 +226,64 @@ class OntologyBuckets(object):
 
 		(main_ontology_file, output_file_basename) = self.onto_helper.check_ont_file(args[0], options)
 
-		# Load main ontology file into RDF graph
-		print ("Fetching and parsing " + main_ontology_file + " ...")
+		cached_rules = False;
 
-		try:
-			# ISSUE: ontology file taken in as ascii; rdflib doesn't accept
-			# utf-8 characters so can experience conversion issues in string
-			# conversion stuff like .replace() below
-			self.onto_helper.graph.parse(main_ontology_file, format='xml')
+		if options.cache:
+			# If there is a cached file to use, go for it, otherwise will have to generate it.
+			if options.output_folder:
+				# Output rule file takes on ontology name + .json
+				json_file_path = output_file_basename + '.json'
 
-		except Exception as e:
-			#urllib2.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
-			stop_err('WARNING:' + main_ontology_file + " could not be loaded!\n", e)
+				if os.path.isfile('./' + json_file_path):
+					with (open(json_file_path)) as input_handle:
+						self.log("Using cached file:", json_file_path)
+						bucket_rules = json.load(input_handle);
+						cached_rules = True;
 
-		# Add each ontology include file (must be in OWL RDF format)
-		self.onto_helper.do_ontology_includes(main_ontology_file)
+			else:
+				stop_err('If using the cache flag, you must specify an output folder to read .json file from (or regenerate it to)')
 
-		for term_id in options.root_uri.split(','):
+		if not cached_rules: 
 
-			# THE ONE CALL TO GET REPORT CATEGORY BOOLEAN EXPRESSIONS
-			self.log('bucket rule compilation for', term_id)
+			# Load main ontology file into RDF graph
+			print ("Fetching and parsing " + main_ontology_file + " ...")
 
-			# If user has provided a set of comparison ids then actually 
-			# execute bucket rules on them and return a boolean result for
-			# each rule.
-			bucket_rules = self.do_membership_rules(term_id)
+			try:
+				# ISSUE: ontology file taken in as ascii; rdflib doesn't accept
+				# utf-8 characters so can experience conversion issues in string
+				# conversion stuff like .replace() below
+				self.onto_helper.graph.parse(main_ontology_file, format='xml')
 
-		# If output folder specified then write out bucket rule file 
-		if (options.output_folder):
-			
-			self.onto_helper.do_output_json(bucket_rules, output_file_basename)
+			except Exception as e:
+				#urllib2.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+				stop_err('WARNING:' + main_ontology_file + " could not be loaded!\n", e)
 
-		self.log('bucket reporting')
+			# Add each ontology include file (must be in OWL RDF format)
+			self.onto_helper.do_ontology_includes(main_ontology_file)
+
+			for term_id in options.root_uri.split(','):
+
+				# THE ONE CALL TO GET REPORT CATEGORY BOOLEAN EXPRESSIONS
+				self.log('bucket rule compilation for', term_id)
+
+				# If user has provided a set of comparison ids then actually 
+				# execute bucket rules on them and return a boolean result for
+				# each rule.
+				bucket_rules = self.do_membership_rules(term_id)
+
+			# If output folder specified then write out bucket rule file 
+			if (options.output_folder):
+				
+				self.onto_helper.do_output_json(bucket_rules, output_file_basename)
+
+		self.log('Bucket reporting')
+
 		# FUTURE: ALTERNATELY, INPUT TSV FILE OR JSON WITH records of hits
 		if options.comparison_ids:
 			comparison_set = set(options.comparison_ids.split(','))
 			for bucket_id, rule in bucket_rules.items():
 				output = self.do_bucket_rule(rule, comparison_set)
-				if (output):
+				if output != {False}:
 					print ("RULE:",bucket_id, output)
 
 	owl_rules = {
@@ -260,20 +298,20 @@ class OntologyBuckets(object):
 		# 'member of' some ~= one or more 'member of ' relations to entities.
 		'owl:someValuesFrom': 
 			lambda self, rule, comparison_set: 
-				self.do_collection(rule[1:], comparison_set, 'owl:someValuesFrom'),
+				self.atLeastOne(rule[1], comparison_set),
  
 		# Issue: check about recognition of combined min/max cardinality.
 		'owl:qualifiedCardinality':
 			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2:], comparison_set)) == rule[1],
+				len(self.do_collection(rule[2], comparison_set)) == rule[1],
 
 		'owl:minQualifiedCardinality': 
 			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2:], comparison_set)) >= rule[1],
+				len(self.do_collection(rule[2], comparison_set)) >= rule[1],
 
 		'owl:maxQualifiedCardinality': 
 			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2:], comparison_set)) <= rule[1],
+				len(self.do_collection(rule[2], comparison_set)) <= rule[1],
 
 		# Unused; 'owl:onProperty' not currently part of the rule syntax.
 		#if (rule_fn == 'owl:onProperty'):
@@ -289,43 +327,71 @@ class OntologyBuckets(object):
 		# comparison_set elements.
 		'owl:intersectionOf':
 			lambda self, rule, comparison_set: 
-				all( set(self.do_collection(rule[1:], comparison_set)).intersection(comparison_set) ),
+				self.intersection(rule, comparison_set),
 
-		# Matches to expressions like "a or b or c". Each can generate a True/
+		# Matches to expressions like "(a or b or c)". Each can generate a True/
 		# False hit on comparison_set.
-		# JUST RETURN THE ITEMS THAT MATCHED.
+		# RETURN JUST ITEMS THAT ARE COMMON TO BOTH SETS.
 		'owl:unionOf':
 			lambda self, rule, comparison_set: 
-				any( set(self.do_collection(rule[1:], comparison_set)).intersection(comparison_set) ),
+				self.do_bucket_rule(rule[1], comparison_set),
 
 		# Matches to expressions like "not (a or b or c) ... " meaning
 		# none of the target elements should be present in the comparison_set.
 		'owl:complementOf':
 			lambda self, rule, comparison_set: 
-				not any(set(self.do_collection(rule[1:], comparison_set)) )
+				set([True]) if not any(set(self.do_collection(rule[1], comparison_set)) ) else set([False])
 				# Ideally just return the leaf element, not its ancestors.
 
 
 	}
 
+	def atLeastOne(self, rule, comparison_set):
+		output_set = self.do_bucket_rule(rule, comparison_set)
+		output_set.discard(False)
+		#print("atLeastOne", output_set)
+		if len(output_set) > 0:
+			return output_set
+		else:
+			return set([False])
+
+	def intersection(self, rule, comparison_set):
+
+		intermediate = self.do_collection(rule[1:], comparison_set);
+		intersect = intermediate.intersection(comparison_set);
+		if len(intermediate) == len(intersect):
+			return intersect
+		else:
+			return set([False])
+
+
 	def do_bucket_rule(self, rule, comparison_set):
 		"""
 		The first parameter of a rule is one of the predicates. Remaining
 		parameters are either cardinality restriction limits, or boolean
-		set operators, or entity id references (strings).
+		set operators, or entity ids (strings).
 
 		Picture the comparison_set as a class or instance having 'has member'
 		relations to all its elements.  The rule expression is one or more
 		tests of given elements against the comparison_set 'has member' items.
-		"""
-		#self.log("Doing rule", rule)
 
-		rule_fn = rule[0]
-		if rule_fn in self.owl_rules:
-			return self.owl_rules[rule_fn](self, rule, comparison_set)
+		OUTPUT: set() containing matching ids, or None elements.
+		"""
+		#print("Doing rule", rule)
+
+		item = rule[0]
+
+		if item in self.owl_rules:
+			return self.owl_rules[item](self, rule, comparison_set)
+
+		# Here we've hit expression that doesn't begin with a function
+		# so it must simply return structure back to calling function.
+		if type(item) == str:
+			return self.do_collection(rule, comparison_set)
 
 		# Error condition, something should have matched above.
-		self.log("Error: unrecognized rule", rule_fn)
+		self.log("Error: unrecognized rule part", item)
+
 		return False 
 
 
@@ -333,40 +399,48 @@ class OntologyBuckets(object):
 	# evaluation for some logical functions, e.g. first true of a
 	# disjunction is returned.
 	def do_collection(self, collection, comparison_set, lookahead = None):
-		output = []
+		output = set()
 		# self.log("doing collection:", collection)
 		for item in collection: # A list: 0, 1, 2... key
-
+			#print ("At", item)
 			if type(item) == str:
-				result = item if (item in comparison_set) else None;
+				if (item in comparison_set):
+					result = item;
+					# if lookahead == 'owl:someValuesFrom':
+					#	return set(item);
+				else: result = False;
+				output.add(result)
 				
 			else:
-				# A list or some other data structure, with first term likely some operator
-				result = (self.do_bucket_rule(item, comparison_set))
+				# A list or some other data structure, with first term likely
+				# some operator like unionOf
+				result = self.do_bucket_rule(item, comparison_set)
 
-			if result != False and lookahead == 'owl:someValuesFrom':
-				return result
+				# ISSUE: SomeValuesFrom is inside an expression, usually UnionOf ...
+				#if lookahead == 'owl:someValuesFrom':
+				#	return result;
+				output.union(result) 
 
-			output.append(result) 
+			#print ('output', output)
 
 		return output
 
 
+	""" ####################################################################
+		Membership Rules are boolean expressions or single entities linked
+		via 'has member' relation between a parent_id entity and children.
+
+		This script reports rule label and id (parent_id) and then sends
+		triple containing "[member of] [cardinality]
+
+		memberships_by_cardinality query returns just the cardinality part.
+		From there we explore the rest of the guts.
+
+		INPUTS
+			?parent_id ?label ?subject ?predicate ?object
+
+	"""
 	def do_membership_rules(self, term_id):
-		""" ####################################################################
-			Membership Rules are boolean expressions or single entities linked
-			via 'has member' relation between a parent_id entity and children.
-
-			This script reports rule label and id (parent_id) and then sends
-			triple containing "[member of] [cardinality]
-
-			memberships_by_cardinality query returns just the cardinality part.
-			From there we explore the rest of the guts.
-
-			INPUTS
-				?parent_id ?label ?subject ?predicate ?object
-
-		"""
 
 		specBinding = {'root': rdflib.URIRef(term_id)} 
 		table = self.onto_helper.do_query_table(self.queries['report_mapping'], specBinding )
@@ -390,26 +464,24 @@ class OntologyBuckets(object):
 		return bucket_rules
 
 
+
 	def do_triple(self, triple):
 		"""
 		Recursive processing of triples according to PREDICATE_SET rules.
+		A given triple's predicate has a range of possible (python) data types
+		for its object: str, rdflib.term.BNode etc. as given above.
+		First get this set, then select the appropriate object function call 
+		by its data type.
+		Then call that function with given triple.
+
+		E.g. if the triple['object'] IS A STRING, this calls the 'str' key's 
+		function supplied in PREDICATE_SET.
+
 		"""
-		t_predicate = triple['predicate']
-
-		if not t_predicate in self.PREDICATE_SET:
-			print ("Unrecognized predicate", t_predicate, " in:", json.dumps(triple, sort_keys=False, indent=4, separators=(',', ': ')))
-			return
-
-		t_object = triple['object']
-		t_object_type = type(t_object)
-		object_type_set = self.PREDICATE_SET[t_predicate]
-
-		if not t_object_type in object_type_set:
-			print ("Unrecognized object for ", t_predicate,":",t_object_type, json.dumps(t_object, sort_keys=False, indent=4, separators=(',', ': ')))
-			return
-
-		t_triple_fn = object_type_set[t_object_type]
-		return t_triple_fn(triple)
+		#predicate_match = self.PREDICATE_SET[ triple['predicate'] ]
+		#object_call = predicate_match[ type(triple['object']) ]
+		#return object_call(triple)
+		return self.PREDICATE_SET[ triple['predicate'] ] [ type(triple['object']) ] (triple)
 
 
 	def get_component_object_text(self, triple): 
@@ -417,7 +489,7 @@ class OntologyBuckets(object):
 		if triple['predicate'] == 'rdf:first':
 			return t_object
 
-		return [triple['predicate'], t_object]
+		return [triple['predicate']] + [[t_object]]
 
 
 	def get_component_set(self, triple): 
@@ -429,7 +501,12 @@ class OntologyBuckets(object):
 
 		HOWEVER, if Collection item is complex, does this shortcut still work?
 		"""
-		datatype = 'owl:unionOf' if triple['expression']['datatype'] else 'owl:intersectionOf'
+		print ("DATATYPE", triple['expression']['datatype'])
+ 
+		if triple['expression']['datatype']:
+			datatype = 'owl:unionOf'
+		else: 
+			datatype = 'owl:intersectionOf'
 
 		return [datatype] + triple['expression']['data']
 
@@ -438,7 +515,7 @@ class OntologyBuckets(object):
 		"""
 		The cardinality cases all require 2nd query to fetch content
 		"""
-		result = [triple['predicate'], triple['object']['value']]
+		result = triple['object']['value']
 
 		triples = self.onto_helper.do_query_table(
 			self.queries['triple_by_relation'], {'subject': triple['subject'] } # ON RESTRICTION
@@ -447,7 +524,8 @@ class OntologyBuckets(object):
 			bnode_result = self.do_triple(bnode_triple)
 			result.append(bnode_result)
 
-		return result # ISSUE: parts may be rdflib.term.BNode
+		print("NOT DOING CARDINALITY CURRENTLY")
+		return triple['predicate'] + [result] # ISSUE: parts may be rdflib.term.BNode
 		
 
 	def get_component_BNode(self, triple):
@@ -459,19 +537,35 @@ class OntologyBuckets(object):
 		triples = self.onto_helper.do_query_table(
 			self.queries['triple_by_subject'], {'subject': triple['object'] }
 		)
-		for bnode_triple in triples:
-			bnode_result = self.do_triple(bnode_triple) 
-			if bnode_result:
-				if type(bnode_result) == str:   # literal values
-					result.append(bnode_result)
-				elif bnode_result[0] in ['owl:intersectionOf','owl:unionOf','owl:complementOf']:
-					result.append(bnode_result) # Append whole list [operator, value , value ...]
-				else:
-					result = result + bnode_result # merge arrays
 
- 		# Skipping "rdf:first", "rdf:rest"
+		for bnode_triple in triples:
+			# Note: bnode_triple may be an iterable.
+
+			bnode_result = self.do_triple(bnode_triple);
+
+			if bnode_result:
+				if type(bnode_result) == str:   # singletonliteral value
+					result.append(bnode_result)
+					#print("bnode whole append", bnode_result)
+				else:
+					for item in bnode_result:
+						if type(item) == str:   # literal values
+							result.append(item)
+							#print("bnode item append", item)
+						else:
+
+							while isinstance(item, list) and len(item)==1 and isinstance(item[0], list):
+								item = item[0]
+							#print("bnode list append", item)
+							result.append(item)
+
+		# Top-level tripple call has to have [predicate]:[...] result 
+		# encapsulated in array; lower level items dealt with in bnode_result
 		if triple['predicate'] in ['owl:someValuesFrom','owl:intersectionOf','owl:unionOf','owl:complementOf']:
-			return [triple['predicate']] + result
+
+			return [triple['predicate']] + [result]
+
+		# Ignoring "rdf:first", "rdf:rest", predicates (i.e. flattening list) but passing their contents on.
 
 		return result
 
@@ -498,6 +592,8 @@ class OntologyBuckets(object):
 
 		# Standard code version identifier.
 		parser.add_option('-v', '--version', dest='code_version', default=False, action='store_true', help='Return version of this code.')
+
+		parser.add_option('-c', '--cache', dest='cache', default=False, action="store_true", help='Allow use of cached json rule file?')
 
 		parser.add_option('-o', '--output', dest='output_folder', type='string', help='Path of output file to create')
 
