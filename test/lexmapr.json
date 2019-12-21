@@ -15,8 +15,11 @@
         }
     },
     "LEXMAPR:0000004": {
-        "owl:someValuesFrom": {
-            "FOODON:00001251": null
+        "owl:maxQualifiedCardinality": {
+            "limit": 1,
+            "set": {
+                "FOODON:00001251": null
+            }
         }
     },
     "LEXMAPR:0000005": {

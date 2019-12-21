@@ -116,16 +116,13 @@ class OntologyBuckets(object):
 			# Issue: check about recognition of combined min/max cardinality.
 			# Issue: returns true/false, not ids of matched items.
 			'owl:qualifiedCardinality':
-				lambda self, content: 
-					len(self.do_bucket_rule(content['parts'])) == content['limit'],
+				self.qualifiedCardinality,
 
 			'owl:minQualifiedCardinality': 
-				lambda self, content: 
-					len(self.do_bucket_rule(content['parts'])) >= content['limit'],
+				self.minQualifiedCardinality,
 
 			'owl:maxQualifiedCardinality': 
-				lambda self, content: 
-					len(self.do_bucket_rule(content['parts'])) <= content['limit'],
+				self.maxQualifiedCardinality,
 
 			# Unused; 'owl:onProperty' not currently part of the rule syntax.
 			#if (rule_fn == 'owl:onProperty'):
@@ -188,17 +185,26 @@ class OntologyBuckets(object):
 			""", initNs = self.onto_helper.namespace),
 
 			# This query focuses on restriction parts and weeds out unneeded annotations.
+
+			#(owl:onClass | owl:intersectionOf | owl:unionOf | owl:complementOf)
 			'triple_by_relation': rdflib.plugins.sparql.prepareQuery("""
 
 				SELECT DISTINCT ?predicate ?object
 				WHERE {
-					?subject (owl:onClass | owl:intersectionOf | owl:unionOf | owl:complementOf) ?object.
+					?subject (owl:onClass) ?object.
 					?subject ?predicate ?object.
 				}
 				ORDER BY ?subject
 
 			""", initNs = self.onto_helper.namespace),
 
+			'cardinality_target': rdflib.plugins.sparql.prepareQuery("""
+
+				SELECT DISTINCT ?object
+				WHERE {
+					?subject owl:onClass ?object.
+				}
+			""", initNs = self.onto_helper.namespace)
 		}
 
 
@@ -348,10 +354,8 @@ class OntologyBuckets(object):
 	def intersectionOf(self, content):
 
 		intermediate = self.do_bucket_rule(content);
-		#intersect = intermediate.intersection(self.comparison_set);
-		#print ("Intersections", content, intermediate)
 		if all(intermediate):
-			intermediate.discard(True)
+			intermediate.discard(True) # redundant
 			return intermediate
 		else:
 			return set([False])
@@ -366,6 +370,27 @@ class OntologyBuckets(object):
 
 		if not any(self.do_bucket_rule(content)):
 			return set([True]) 
+		else:
+			return set([False])
+
+	def qualifiedCardinality(self, content): 
+		intermediate = self.do_bucket_rule(content['set'])
+		if len(intermediate) == content['limit']:
+			return intermediate
+		else:
+			return set([False])
+
+	def minQualifiedCardinality(self, content): 
+		intermediate = self.do_bucket_rule(content['set'])
+		if len(intermediate) >= content['limit']:
+			return intermediate
+		else:
+			return set([False])
+
+	def maxQualifiedCardinality(self, content):
+		intermediate = self.do_bucket_rule(content['set'])
+		if len(intermediate) <= content['limit']:
+			return intermediate
 		else:
 			return set([False])
 
@@ -390,7 +415,8 @@ class OntologyBuckets(object):
 
 			#print ("Item:", item)
 			if item in self.owl_rules:
-				output.update(self.owl_rules[item](rule[item]))
+				print ("RULE ITEM", item, rule[item])
+				output.update( self.owl_rules[item]( rule[item] ) )
 
 			# Here we've hit expression that doesn't begin with a function
 			# so it is an entity id to compare against comparison set.
@@ -437,30 +463,10 @@ class OntologyBuckets(object):
 			bucket_rules[triple['parent_id']] = self.do_triple(triple)
 
 			if self.TEST == 1:
-				print (triple['label'], '('+triple['parent_id']+')', bucket_rules[triple['parent_id']])
+				print (triple['label'], '(' + triple['parent_id'] + ')', bucket_rules[triple['parent_id']])
 
 		return bucket_rules
 
-
-
-	def get_component_cardinality(self, triple): 
-		"""
-		The cardinality cases all require 2nd query to fetch content.
-		"""
-		
-		print("NOT DOING CARDINALITY CURRENTLY")
-
-		result = triple['object']['value']
-
-		triples = self.onto_helper.do_query_table(
-			self.queries['triple_by_relation'], {'subject': triple['subject'] } # ON RESTRICTION
-		)
-		for bnode_triple in triples:
-			bnode_result = self.do_triple(bnode_triple)
-			result.append(bnode_result)
-
-		return {triple['predicate'] : result}
-	
 
 	def get_component_BNode(self, node_id):
 
@@ -512,8 +518,39 @@ class OntologyBuckets(object):
 			#print ("KONSTANT:", bnode_object)
 			return {bnode_predicate: {bnode_object: None}};
 
+		# E.g. QUALIFIED {'label': 'Avian', 'parent_id': 'LEXMAPR:0000004', 'expression': {'datatype': 'disjunction', 'data': []}, 'subject': rdflib.term.BNode('N56404ec196374f5998f05241cf8e7875'), 'predicate': 'owl:minQualifiedCardinality', 'object': {'value': '1', 'datatype': 'xmls:nonNegativeInteger'}}
+		if bnode_predicate in ['owl:qualifiedCardinality','owl:minQualifiedCardinality','owl:maxQualifiedCardinality']:
+			#print ('QUALIFIED', triple)
+			return {bnode_predicate: 
+				{'limit': int(bnode_object['value']), 
+				'set': self.get_component_cardinality(triple['subject'])
+				}
+			}
+
 		#print("BONODIE2:", bnode_predicate, bnode_object)
 		return {bnode_predicate: self.get_component_BNode(bnode_object)};
+
+
+	def get_component_cardinality(self, subject_id): 
+		"""
+		The cardinality cases all require 2nd query to fetch target class
+		of restriction.
+		"""
+		objects = self.onto_helper.do_query_table(
+			self.queries['cardinality_target'], {'subject': subject_id}
+		)
+		#print ("DUMP CARD TRIPLES", objects)
+		# Should only be one...?!
+		for row in objects:
+			node_object = row['object']
+			if type(node_object) == str:
+				return {node_object: None}
+
+			# NOT TESTED:
+			return self.get_component_BNode(node_object)
+
+		return {}
+	
 
 
 	def render_debug(self, triple):
