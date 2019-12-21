@@ -51,10 +51,15 @@
 
 
 	TEST CASES
-		> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -i FOODON:00001286
-	I.e. "turkey meat food product" should lead to only:	
-		LEXMAPR:0000073 True
+		> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -o test/ -c -i FOODON:00001286
+	I.e. "turkey meat food product" should yield "Turkey" bucket:	
+		LEXMAPR:0000073 {FOODON:00001286}
 
+		> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -o test/ -c -i FOODON:00002099
+	I.e. "peanut food product" should yield "Nuts" bucket
+		LEXMAPR:0000073 {FOODON:00002099}
+
+	> python ontobucket.py ../lexmapr_ontology/lexmapr.owl -r http://genepio.org/ontology/LEXMAPR_0000001 -o test/ -c -i FOODON:00002099
 
 	**************************************************************************
 """ 
@@ -81,29 +86,62 @@ def stop_err(msg, exit_code = 1):
 	sys.exit(exit_code)
 
 
-
+"""
+Allows formatted help info.  From http://stackoverflow.com/questions/1857346/python-optparse-how-to-include-additional-info-in-usage-output.
+"""
 class MyParser(optparse.OptionParser):
-	"""
-	Allows formatted help info.  From http://stackoverflow.com/questions/1857346/python-optparse-how-to-include-additional-info-in-usage-output.
-	"""
+
 	def format_epilog(self, formatter):
 		return self.epilog
 
+"""
 
+
+"""
 class OntologyBuckets(object):
-	"""
 
-
-	"""
-
-	CODE_VERSION = '0.0.3'
+	CODE_VERSION = '0.0.4'
 	TEST = 0 # = 1 to test a hardcoded small subset of .owl ontology rules.
 	
 	def __init__(self):
 
 		self.onto_helper = oh.OntoHelper()
 		self.timestamp = datetime.datetime.now()
+		self.comparison_set = None
+
+		self.owl_rules = {
+
+			'owl:someValuesFrom': self.someValuesFrom,
 	 
+			# Issue: check about recognition of combined min/max cardinality.
+			# Issue: returns true/false, not ids of matched items.
+			'owl:qualifiedCardinality':
+				lambda self, content: 
+					len(self.do_bucket_rule(content['parts'])) == content['limit'],
+
+			'owl:minQualifiedCardinality': 
+				lambda self, content: 
+					len(self.do_bucket_rule(content['parts'])) >= content['limit'],
+
+			'owl:maxQualifiedCardinality': 
+				lambda self, content: 
+					len(self.do_bucket_rule(content['parts'])) <= content['limit'],
+
+			# Unused; 'owl:onProperty' not currently part of the rule syntax.
+			#if (rule_fn == 'owl:onProperty'):
+			#	return 
+
+			'owl:intersectionOf': self.intersectionOf,
+
+			# Matches to expressions like "(a or b or c)". Each can generate a True/
+			# False hit on self.comparison_set.
+			# RETURN JUST ITEMS THAT ARE COMMON TO BOTH SETS.
+			'owl:unionOf': self.someValuesFrom,
+
+			'owl:complementOf': self.complementOf
+
+		}
+
 		self.queries = {
 
 			##################################################################
@@ -123,7 +161,7 @@ class OntologyBuckets(object):
 
 				SELECT DISTINCT ?label ?parent_id ?subject ?predicate ?object
 				WHERE {
-					BIND (OBO:RO_0002351 as ?has_member).  # MIGRATE TO RO:has member
+					BIND (OBO:RO_0002351 as ?has_member).
 					
 					?parent_id rdfs:subClassOf* ?root.
 					?parent_id owl:equivalentClass ?subject.
@@ -145,7 +183,7 @@ class OntologyBuckets(object):
 
 				SELECT DISTINCT ?predicate ?object
 				WHERE {?subject ?predicate ?object}
-				ORDER BY ?subject
+				ORDER BY ?predicate
 
 			""", initNs = self.onto_helper.namespace),
 
@@ -162,65 +200,6 @@ class OntologyBuckets(object):
 			""", initNs = self.onto_helper.namespace),
 
 		}
-
-
-		"""
-		The "PREDICATE_SET" dictionary has for its keys the set of predicates
-		we can expect in a bucket matching expression ('has member' axiom). 
-		The dictionary contains datatypes as keys that object's data type 
-		should match to, and for the match, a function specific to that 
-		datatype. Recursion is carried out where the object is a BNode (blank
-		or anonymous node) that must be investigated further.
-
-		NOTE: If ontobucket.py prints out an error of form "unrecognized 
-		predicate [BIG LONG PREFIX]" and you need that predicate, then 
-		ensure its prefix is added to ontohelper.py self.struct['@context'].
-
-		"""
-		self.PREDICATE_SET = {
-			'owl:someValuesFrom': {
-				str: self.get_component_object_text, # A string value / term id
-				rdflib.term.BNode: self.get_component_BNode, 
-			},
-			# These cases all require further function to fetch content
-			'owl:qualifiedCardinality': 	{dict: self.get_component_cardinality},
-			'owl:minQualifiedCardinality':	{dict: self.get_component_cardinality},
-			'owl:maxQualifiedCardinality':	{dict: self.get_component_cardinality},
-
-			 # used in conjunction with cardinality
-			 # SHORTCUT, otherwise self.get_component_BNode 
-			'owl:onClass': {rdflib.term.BNode: self.get_component_set}, # always BNode
-			'owl:intersectionOf': {
-				str: self.get_component_object_text,
-				rdflib.term.BNode: self.get_component_BNode
-				},
-			'owl:unionOf': {
-				str: self.get_component_object_text,
-				rdflib.term.BNode: self.get_component_BNode
-				},
-			'owl:complementOf': {
-				str: self.get_component_object_text, # A negated ontology id, I.e. ensure comparison_set doesn't have this element or child.
-				rdflib.term.BNode: self.get_component_BNode, #self.get_component_set # SHORTCUT????
-			},
-
-			# self.get_component_object_text, # would return 'has member' or whichever relation was involved
-			'owl:onProperty': {str: self.get_component_blank}, 
-
-			# These two indicate a collection (list of expressions)
-			'rdf:first': {
-				str: self.get_component_object_text, # The ontology id
-				rdflib.term.BNode: self.get_component_BNode
-			},
-			'rdf:rest': {
-				str: self.get_component_blank, # signals end of list
-				rdflib.term.BNode: self.get_component_BNode
-
-			},
-			# Instance or Class.  Not really informative unless some 
-			# distinction is being made about them.
-			'rdf:type': {str: self.get_component_blank} 
-		}
-
 
 
 	def log(self, *args):
@@ -300,78 +279,33 @@ class OntologyBuckets(object):
 				
 				self.onto_helper.do_output_json(bucket_rules, output_file_basename)
 
-		self.log('Bucket reporting')
-
-		# FUTURE: ALTERNATELY, INPUT TSV FILE OR JSON WITH records of hits
+		# FUTURE: ALTERNATELY, INPUT comparison_ids as TSV FILE OR JSON WITH 
+		# records of hits
 		if options.comparison_ids:
-			comparison_set = set(options.comparison_ids.split(','))
+
+			self.log('Bucket reporting')
+			# The self.comparison_set of entity ids which rule parts are tested
+			# against.
+			self.comparison_set = set(options.comparison_ids.split(','))
+			
 			for bucket_id, rule in bucket_rules.items():
-				output = self.do_bucket_rule(rule, comparison_set)
+				output = self.do_bucket_rule(rule)
 				if output != {False}:
 					print ("RULE:",bucket_id, output)
 
-	owl_rules = {
 
-		# CARDINALITY SPECIFIES NUMBER OF ITEMS THAT CAN MATCH. USUALLY WITH 
-		# CATEGORY MATCHING RULES one or more supporting (or negated) piece
-		# of evidence is all we care about, but exact cardinality is also
-		# enabled below.
-		# Cardinality rules return boolean True / False, which means that 
-		# parent term must work on boolean values.
+	"""
+	CARDINALITY SPECIFIES NUMBER OF ITEMS THAT CAN MATCH. USUALLY WITH 
+	CATEGORY MATCHING RULES one or more supporting (or negated) piece
+	of evidence is all we care about, but exact cardinality is also
+	enabled below.
+	Cardinality rules return boolean True / False, which means that 
+	parent term must work on boolean values.
 
-		# 'member of' some ~= one or more 'member of ' relations to entities.
-		'owl:someValuesFrom': 
-			lambda self, rule, comparison_set: 
-				self.atLeastOne(rule[1], comparison_set),
- 
-		# Issue: check about recognition of combined min/max cardinality.
-		'owl:qualifiedCardinality':
-			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2], comparison_set)) == rule[1],
-
-		'owl:minQualifiedCardinality': 
-			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2], comparison_set)) >= rule[1],
-
-		'owl:maxQualifiedCardinality': 
-			lambda self, rule, comparison_set: 
-				len(self.do_collection(rule[2], comparison_set)) <= rule[1],
-
-		# Unused; 'owl:onProperty' not currently part of the rule syntax.
-		#if (rule_fn == 'owl:onProperty'):
-		#	return 
-
-		# Matches to expressions like "(a and b and c)" but these would rarely
-		# be entity references directly - if they were the constraint would be
-		# that rule was indicating that member was simultaniously class a, b, c.
-		# Instead, usually each entity would be an expression of predicate link 
-		# 'has member' to some condition on presence or absense of member 
-		# elements, i.e. more likely used in form of "(expression a) and 
-		# (expression b)" where each expression is placing constraints on 
-		# comparison_set elements.
-		'owl:intersectionOf':
-			lambda self, rule, comparison_set: 
-				self.intersection(rule, comparison_set),
-
-		# Matches to expressions like "(a or b or c)". Each can generate a True/
-		# False hit on comparison_set.
-		# RETURN JUST ITEMS THAT ARE COMMON TO BOTH SETS.
-		'owl:unionOf':
-			lambda self, rule, comparison_set: 
-				self.do_bucket_rule(rule[1], comparison_set),
-
-		# Matches to expressions like "not (a or b or c) ... " meaning
-		# none of the target elements should be present in the comparison_set.
-		'owl:complementOf':
-			lambda self, rule, comparison_set: 
-				set([True]) if not any(set(self.do_collection(rule[1], comparison_set)) ) else set([False])
-				# Ideally just return the leaf element, not its ancestors.
-
-
-	}
-
-	def atLeastOne(self, rule, comparison_set):
-		output_set = self.do_bucket_rule(rule, comparison_set)
+	'member of' some ~= one or more 'member of ' relations to entities.
+	"""
+	def someValuesFrom(self, content):
+		output_set = self.do_bucket_rule(content)
 		output_set.discard(False)
 		#print("atLeastOne", output_set)
 		if len(output_set) > 0:
@@ -379,73 +313,91 @@ class OntologyBuckets(object):
 		else:
 			return set([False])
 
-	def intersection(self, rule, comparison_set):
+	""" 
+	Matches to expressions like "(a and b and c)" but these would rarely
+	be entity references directly - if they were the constraint would be
+	that rule was indicating that member was simultaniously class a, b, c.
+	Instead, usually each entity would be an expression of predicate link 
+	'has member' to some condition on presence or absense of member 
+	elements, i.e. more likely used in form of "(expression a) and 
+	(expression b)" where each expression is placing constraints on 
+	self.comparison_set elements.
 
-		intermediate = self.do_collection(rule[1:], comparison_set);
-		intersect = intermediate.intersection(comparison_set);
-		if len(intermediate) == len(intersect):
-			return intersect
+	ISSUE: truthiness. Like the others, IntersectionOf must have its
+	components match (or not) as they see fit to the self.comparison_set.
+	It must evaluate as both sets returning "True" or an element that was
+	matched in self.comparison_set.  So complementOf can return "True".
+
+	 "LEXMAPR:0000041": {
+	        "owl:someValuesFrom": {
+	            "owl:intersectionOf": {
+	                "owl:unionOf": {
+	                    "FOODON:00001172": null,
+	                    "FOODON:00002099": null,
+	                    "FOODON:03306867": null,
+	                    "FOODON:03411213": null
+	                },
+	                "owl:complementOf": {
+	                    "FOODON:03306867": null
+	                }
+	            }
+	        }
+	    },
+
+    """
+	def intersectionOf(self, content):
+
+		intermediate = self.do_bucket_rule(content);
+		#intersect = intermediate.intersection(self.comparison_set);
+		#print ("Intersections", content, intermediate)
+		if all(intermediate):
+			intermediate.discard(True)
+			return intermediate
 		else:
 			return set([False])
 
+	""" 
+		Matches to expressions like "not (a or b or c) ... " meaning
+		none of the target elements should be present in the self.comparison_set.  
+		Only returns True or False; never returns elements.
+		No element in content can match e in self.comparison_set
+	"""
+	def complementOf(self, content):
 
-	def do_bucket_rule(self, rule, comparison_set):
-		"""
-		The first parameter of a rule is one of the predicates. Remaining
-		parameters are either cardinality restriction limits, or boolean
-		set operators, or entity ids (strings).
+		if not any(self.do_bucket_rule(content)):
+			return set([True]) 
+		else:
+			return set([False])
 
-		Picture the comparison_set as a class or instance having 'has member'
-		relations to all its elements.  The rule expression is one or more
-		tests of given elements against the comparison_set 'has member' items.
+	"""
+	The first parameter of a rule is one of the predicates. Remaining
+	parameters are either cardinality restriction limits, or boolean
+	set operators, or entity ids (strings).
 
-		OUTPUT: set() containing matching ids, or None elements.
-		"""
+	Picture the self.comparison_set as a class or instance having 'has member'
+	relations to all its elements.  The rule expression is one or more
+	tests of given elements against the self.comparison_set 'has member' items.
+
+	OUTPUT: set() containing matching ids, or None elements.
+	"""
+	def do_bucket_rule(self, rule):
+
 		#print("Doing rule", rule)
+		output = set() 
+		# At top-level a rule dictionary should only have one key, usually owl:someValuesFrom .
+		#print ("DOING RULE:", rule )
+		for item in rule.keys(): 
 
-		item = rule[0]
+			#print ("Item:", item)
+			if item in self.owl_rules:
+				output.update(self.owl_rules[item](rule[item]))
 
-		if item in self.owl_rules:
-			return self.owl_rules[item](self, rule, comparison_set)
-
-		# Here we've hit expression that doesn't begin with a function
-		# so it must simply return structure back to calling function.
-		if type(item) == str:
-			return self.do_collection(rule, comparison_set)
-
-		# Error condition, something should have matched above.
-		self.log("Error: unrecognized rule part", item)
-
-		return False 
-
-
-	# Limited implementation of lookahead function which will shortcut 
-	# evaluation for some logical functions, e.g. first true of a
-	# disjunction is returned.
-	def do_collection(self, collection, comparison_set, lookahead = None):
-		output = set()
-		# self.log("doing collection:", collection)
-		for item in collection: # A list: 0, 1, 2... key
-			#print ("At", item)
-			if type(item) == str:
-				if (item in comparison_set):
-					result = item;
-					# if lookahead == 'owl:someValuesFrom':
-					#	return set(item);
-				else: result = False;
-				output.add(result)
-				
-			else:
-				# A list or some other data structure, with first term likely
-				# some operator like unionOf
-				result = self.do_bucket_rule(item, comparison_set)
-
-				# ISSUE: SomeValuesFrom is inside an expression, usually UnionOf ...
-				#if lookahead == 'owl:someValuesFrom':
-				#	return result;
-				output.union(result) 
-
-			#print ('output', output)
+			# Here we've hit expression that doesn't begin with a function
+			# so it is an entity id to compare against comparison set.
+			if item in self.comparison_set:
+				output.add(item)
+			#else:
+			#	output.add(False)
 
 		return output
 
@@ -477,68 +429,27 @@ class OntologyBuckets(object):
 		for triple in table: 
 			# TEST EXAMPLES
 
-			if self.TEST == 1 and not triple['parent_id'] in (['LEXMAPR:0000002', 'LEXMAPR:0000007', 'LEXMAPR:0000041']):
-				continue
+			if self.TEST == 1 and not triple['parent_id'] in (['LEXMAPR:0000041']):
+				continue #LEXMAPR:0000002', 'LEXMAPR:0000007', '
 			
+			# The 'report_mapping' query triples also have a 'label' and
+			# 'parent_id' field. Generally they have predicate: someValuesFrom
 			bucket_rules[triple['parent_id']] = self.do_triple(triple)
 
 			if self.TEST == 1:
-				print (triple['label'], '('+triple['parent_id']+')', ":", self.do_triple(triple))
+				print (triple['label'], '('+triple['parent_id']+')', bucket_rules[triple['parent_id']])
 
 		return bucket_rules
 
 
 
-	def do_triple(self, triple):
-		"""
-		Recursive processing of triples according to PREDICATE_SET rules.
-		A given triple's predicate has a range of possible (python) data types
-		for its object: str, rdflib.term.BNode etc. as given above.
-		First get this set, then select the appropriate object function call 
-		by its data type.
-		Then call that function with given triple.
-
-		E.g. if the triple['object'] IS A STRING, this calls the 'str' key's 
-		function supplied in PREDICATE_SET.
-
-		"""
-		#predicate_match = self.PREDICATE_SET[ triple['predicate'] ]
-		#object_call = predicate_match[ type(triple['object']) ]
-		#return object_call(triple)
-		return self.PREDICATE_SET[ triple['predicate'] ] [ type(triple['object']) ] (triple)
-
-
-	def get_component_object_text(self, triple): 
-		t_object = triple['object']
-		if triple['predicate'] == 'rdf:first':
-			return t_object
-
-		return [triple['predicate']] + [[t_object]]
-
-
-	def get_component_set(self, triple): 
-		"""
-		For the QualifiedCardinality nodes, rdflib adds a shortcut "expression"
-		key-value dictionary which contains "datatype" [disjunction|conjunction]
-		and a "data" key that is a list of ontology entity ids. This appears to
-		be triggered by a rdf:parseType="Collection" attribute.
-
-		HOWEVER, if Collection item is complex, does this shortcut still work?
-		"""
-		#print ("DATATYPE", triple['expression']['datatype'])
- 
-		if triple['expression']['datatype']:
-			datatype = 'owl:unionOf'
-		else: 
-			datatype = 'owl:intersectionOf'
-
-		return [datatype] + triple['expression']['data']
-
-
 	def get_component_cardinality(self, triple): 
 		"""
-		The cardinality cases all require 2nd query to fetch content
+		The cardinality cases all require 2nd query to fetch content.
 		"""
+		
+		print("NOT DOING CARDINALITY CURRENTLY")
+
 		result = triple['object']['value']
 
 		triples = self.onto_helper.do_query_table(
@@ -548,50 +459,61 @@ class OntologyBuckets(object):
 			bnode_result = self.do_triple(bnode_triple)
 			result.append(bnode_result)
 
-		print("NOT DOING CARDINALITY CURRENTLY")
-		return triple['predicate'] + [result] # ISSUE: parts may be rdflib.term.BNode
-		
+		return {triple['predicate'] : result}
+	
 
-	def get_component_BNode(self, triple):
+	def get_component_BNode(self, node_id):
 
-		result = []
+		result = {}
 
 		# Find subordinate tripples that begin with triple's object.
 		# Basically none of these are annotations
 		triples = self.onto_helper.do_query_table(
-			self.queries['triple_by_subject'], {'subject': triple['object'] }
+			self.queries['triple_by_subject'], {'subject': node_id }
 		)
 
 		for bnode_triple in triples:
-			# Note: bnode_triple may be an iterable.
-
-			bnode_result = self.do_triple(bnode_triple);
-
-			if bnode_result:
-				if type(bnode_result) == str:   # singleton literal value
-					result.append(bnode_result)
-					#print("bnode whole append", bnode_result)
-				else:
-					for item in bnode_result:
-						if type(item) == str:   # literal values
-							result.append(item)
-							#print("bnode item append", item)
-						else:
-
-							while isinstance(item, list) and len(item)==1 and isinstance(item[0], list):
-								item = item[0]
-							#print("bnode list append", item)
-							result.append(item)
-
-		# Top-level tripple call has to have [predicate]:[...] result 
-		# encapsulated in array; lower level items dealt with in bnode_result
-		if triple['predicate'] in ['owl:someValuesFrom','owl:intersectionOf','owl:unionOf','owl:complementOf']:
-
-			return [triple['predicate']] + [result]
-
-		# Ignoring "rdf:first", "rdf:rest", predicates (i.e. flattening list) but passing their contents on.
+			result.update( self.do_triple(bnode_triple) )
 
 		return result
+
+
+	def do_triple(self, triple):
+
+		bnode_predicate = triple['predicate'];
+		bnode_object = triple['object'];
+
+		# Add symbol as key.
+		if bnode_predicate == 'rdf:first':
+			if type(bnode_object) == str:
+				return {bnode_object: None};
+
+			# Triples have an apparent list of entity id held in triple.expression.data, but taking this prevents rdf:rest chain which can lead to other things outside the list.  triple e.g.: {'predicate': 'rdf:first', 'expression': {'datatype': 'disjunction', 'data': [... list ..]
+
+			#print("BONODIE1:", bnode_object)
+			# Merge dictionary of complex structure:
+			return self.get_component_BNode(bnode_object);
+
+		if bnode_predicate == 'rdf:rest':
+			if 'bnode_object' == 'rdf:nil':
+				# End of list.  Nothing more to do here.
+				return None 
+
+			return self.get_component_BNode(bnode_object);
+
+		if bnode_predicate == 'rdf:type':
+			# and bnode_triple['object'] == 'owl:Class':
+			# Currently class simply adds anonymous shell onto contents - because rules (which are anonymous classes) don't/can't hold more than one bracketed expression. 
+			return self.get_component_BNode(bnode_object);
+
+		if type(bnode_object) == str: 
+			# At this point, any string object should just be
+			# a dictionary predicate key to the string.
+			#print ("KONSTANT:", bnode_object)
+			return {bnode_predicate: {bnode_object: None}};
+
+		#print("BONODIE2:", bnode_predicate, bnode_object)
+		return {bnode_predicate: self.get_component_BNode(bnode_object)};
 
 
 	def render_debug(self, triple):
