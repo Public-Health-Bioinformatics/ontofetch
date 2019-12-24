@@ -350,6 +350,9 @@ class OntologyBuckets(object):
 	        }
 	    },
 
+	PROBLEM for cardinality checks in the case where sub-expressions return 
+	True: these	are merged into a single element True. Thus cardinality won't
+	work on them.
     """
 	def intersectionOf(self, content):
 
@@ -372,6 +375,7 @@ class OntologyBuckets(object):
 			return set([True]) 
 		else:
 			return set([False])
+
 
 	def qualifiedCardinality(self, content): 
 		intermediate = self.do_bucket_rule(content['set'])
@@ -415,7 +419,7 @@ class OntologyBuckets(object):
 
 			#print ("Item:", item)
 			if item in self.owl_rules:
-				print ("RULE ITEM", item, rule[item])
+				#print ("RULE ITEM", item, rule[item])
 				output.update( self.owl_rules[item]( rule[item] ) )
 
 			# Here we've hit expression that doesn't begin with a function
