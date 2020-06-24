@@ -1,6 +1,6 @@
 # ontofetch.py Vocabulary Fetch
 
-A command line fetch script (in https://github.com/GenEpiO/geem in scripts/ontofetch.py) will fetch and prepare the necessary field data from a given ontology URL or file. This is output in tabular and JSON if desired. Currently every term under “entity:Thing” in an OWL 2.0 ontology is fetched by default, but one can specify a comma-delimited list of URLs to fetch terms under via the -r or -root parameter. Usage:
+A command line fetch script (ontofetch.py) will fetch and prepare the necessary field data from a given ontology URL or file. This is output in tabular and JSON if desired. Currently every term under “entity:Thing” in an OWL 2.0 ontology is fetched by default, but one can specify a comma-delimited list of URLs to fetch terms under via the -r or -root parameter. Usage:
 
 > ontofetch.py [file path or URL of ontology to fetch] -o [output file folder] -r [ontology root term URI]
 
